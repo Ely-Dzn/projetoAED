@@ -7,15 +7,16 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class VSOutlineUpdater : MonoBehaviour
 {
-    VariableDeclarations variables;
+    Variables variables;
     Outline outline;
 
     void Start()
     {
-        variables = gameObject.GetOrAddComponent<Variables>().declarations;
+        variables = gameObject.GetOrAddComponent<Variables>();
         outline = GetComponent<Outline>();
         outline.OutlineMode = GetMode();
         outline.enabled = GetEnabled();
+        Debug.Log("VSOutlineUpdater initialized");
     }
     void Update()
     {
@@ -33,22 +34,23 @@ public class VSOutlineUpdater : MonoBehaviour
 
     bool GetEnabled()
     {
-        return GetVarSafe("outline_enabled", true);
+        return (bool)GetVarSafe("outline_enabled", true);
     }
     Outline.Mode GetMode()
     {
-        int val = GetVarSafe("outline_mode", 0);
+        int val = (int)GetVarSafe("outline_mode", 0);
         if (!Enum.IsDefined(typeof(Outline.Mode), val))
         {
             val = 0;
         }
         return (Outline.Mode)val;
     }
-    T GetVarSafe<T>(string variable, T defaultValue)
+    object GetVarSafe(string variable, object defaultValue)
     {
         try
         {
-            return variables.Get<T>(variable);
+            // return variables.declarations.Get<T>(variable);
+            return Variables.Object(gameObject).Get(variable);
         }
         catch { }
         return defaultValue;
