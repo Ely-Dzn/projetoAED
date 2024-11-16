@@ -115,6 +115,14 @@ public class Outline : MonoBehaviour {
     }
   }
 
+#if UNITY_EDITOR
+  [System.Diagnostics.CodeAnalysis.SuppressMessage("ApiDesign", "RS0030:Do not use banned APIs", Justification = "<Pending>")]
+  void Reset() {
+    outlineMaskMaterial = Resources.Load<Material>("Materials/OutlineMask");
+    outlineFillMaterial = Resources.Load<Material>("Materials/OutlineFill");
+  }
+#endif
+
   void OnValidate() {
 
     // Update material properties
