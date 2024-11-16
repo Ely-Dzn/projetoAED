@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [DisallowMultipleComponent]
+[RequireComponent(typeof(Outline))]
 public class VSOutlineUpdater : MonoBehaviour
 {
     Variables variables;
@@ -16,7 +17,6 @@ public class VSOutlineUpdater : MonoBehaviour
         outline = GetComponent<Outline>();
         outline.OutlineMode = GetMode();
         outline.enabled = GetEnabled();
-        Debug.Log("VSOutlineUpdater initialized");
     }
     void Update()
     {
@@ -49,8 +49,7 @@ public class VSOutlineUpdater : MonoBehaviour
     {
         try
         {
-            // return variables.declarations.Get<T>(variable);
-            return Variables.Object(gameObject).Get(variable);
+            return variables.declarations.Get(variable);
         }
         catch { }
         return defaultValue;

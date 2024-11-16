@@ -272,7 +272,8 @@ public class Outline : MonoBehaviour {
     mesh.SetTriangles(mesh.triangles, mesh.subMeshCount - 1);
   }
 
-  void UpdateMaterialProperties() {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("ApiDesign", "RS0030:Avoid APIs that are flagged for banning", Justification = "<Pending>")]
+    void UpdateMaterialProperties() {
 
     // Apply properties according to mode
     outlineFillMaterial.SetColor("_OutlineColor", outlineColor);
