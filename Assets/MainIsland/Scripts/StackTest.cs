@@ -19,8 +19,10 @@ public class StackTest : MonoBehaviour
     void Update()
     {
         var items = (ArrayList)variables.declarations.Get("items");
+        var cam = SpatialBridge.cameraService;
 
-        if (SpatialBridge.cameraService.rotationMode != SpatialCameraRotationMode.PointerLock_Locked)
+#if !UNITY_EDITOR
+        if (cam.rotationMode != SpatialCameraRotationMode.PointerLock_Locked)
         {
             foreach (var item in items)
             {
@@ -33,6 +35,7 @@ public class StackTest : MonoBehaviour
             }
             return;
         }
+#endif
 
         var hit = Variables.Scene(gameObject).Get("cam_raycast");
         var target = hit != null ? ((RaycastHit)hit).transform.gameObject : null;
@@ -45,22 +48,18 @@ public class StackTest : MonoBehaviour
         {
             var go = (GameObject)item;
             var interactable = go.GetComponentInParent<SpatialInteractable>();
-            if (interactable == null) continue;
+            var outline = go.GetComponentInParent<Outline>();
+            if (interactable == null || outline == null) continue;
             if (go == target)
             {
                 interactable.enabled = true;
-                go.transform.Rotate(0, Time.deltaTime * 100f, 0);
+                outline.enabled = true;
             }
             else
             {
                 interactable.enabled = false;
+                outline.enabled = false;
             }
         }
-        // var hit = (RaycastHit)Variables.Scene(gameObject).Get("cam_raycast");
-        // if (hit)
-        // {
-        //     var interactable = hit.transform.getComponent<SpatialInteractable>();
-        //     Debug.Log("Grabbed");
-        // }
     }
 }
