@@ -14,10 +14,11 @@ public class StackTest : MonoBehaviour
     void Start()
     {
         variables = gameObject.GetOrAddComponent<Variables>();
-
     }
+
     void Update()
     {
+        var slots = (ArrayList)variables.declarations.Get("slots");
         var items = (ArrayList)variables.declarations.Get("items");
         var cam = SpatialBridge.cameraService;
 
@@ -44,22 +45,25 @@ public class StackTest : MonoBehaviour
             var parent = target.transform.parent;
             target = parent != null ? parent.gameObject : null;
         }
-        foreach (var item in items)
+
+        for (int i = 0; i < slots.Count; i++)
         {
-            var go = (GameObject)item;
-            var interactable = go.GetComponentInParent<SpatialInteractable>();
-            var outline = go.GetComponentInParent<Outline>();
-            if (interactable == null || outline == null) continue;
-            if (go == target)
+            var slot = (GameObject)slots[i];
+            var interactable = slot.GetComponentInChildren<SpatialInteractable>();
+            if (interactable == null) continue;
+            if (i < items.Count)
             {
-                interactable.enabled = true;
-                outline.enabled = true;
-            }
-            else
-            {
-                interactable.enabled = false;
+                var item = (GameObject)items[i];
+                var outline = item.GetComponentInChildren<Outline>();
+                if (item == target)
+                {
+                    interactable.enabled = true;
+                    outline.enabled = true;
+                    continue;
+                }
                 outline.enabled = false;
             }
+            interactable.enabled = false;
         }
     }
 }
