@@ -11,9 +11,12 @@ UpgradeLog.htm
 *.sln
 .vsconfig
 .vscode
-.vs
 !Assets/**/*~
 Assets/Unity.VisualScripting.Generated*
 Assets/Spatial/Temp*
 Assets/Spatial/Generated*
 **/*.blend1
+
+# Visual Studio
+.vs
+*.user
