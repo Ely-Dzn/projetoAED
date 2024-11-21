@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9217437284566022022}
   - component: {fileID: 2438628460969236442}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: LivroPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7196630559819421603}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
   m_Name: 
@@ -161,8 +161,6 @@ MonoBehaviour:
     - {x: 0.705708, y: 0.005556778, z: 0.70848095}
     - {x: 0.5758423, y: 0.5803588, z: 0.5758379}
     - {x: 0.5728117, y: 0.5818681, z: 0.5773354}
-  outlineMaskMaterial: {fileID: 2100000, guid: 106f3ff43a17d4967a2b64c7a92e49ec, type: 2}
-  outlineFillMaterial: {fileID: 2100000, guid: 311313efa011949e98b6761d652ad13c, type: 2}
 --- !u!1001 &7464127722856726402
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -229,6 +227,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: livro
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2c586bed30d73d64db5a5f3accbb120e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 31
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2c586bed30d73d64db5a5f3accbb120e, type: 3}

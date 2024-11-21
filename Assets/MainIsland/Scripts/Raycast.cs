@@ -6,9 +6,8 @@ using SCRM = SpatialSys.UnitySDK.SpatialCameraRotationMode;
 
 public class Raycast : MonoBehaviour
 {
-    public const int AvatarLocalLayerMask = 30;
-    public static RaycastHit RaycastHit { get; private set; }
-    public static bool Hit { get; private set; } = false;
+    public static RaycastHit Hit { get; private set; }
+    public static bool HasHit { get; private set; } = false;
     private VariableDeclarations sceneVariables;
 
     void Start()
@@ -36,10 +35,13 @@ public class Raycast : MonoBehaviour
             ray = new(cam.position, cam.forward);
         else
             ray = cam.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, 10, ~AvatarLocalLayerMask))
+
+        if (Physics.Raycast(
+            ray, out RaycastHit hit, 10,
+            ~(Layers.AvatarLocalMask | Layers.AvatarRemoteMask)))
         {
-            RaycastHit = hit;
-            Hit = true;
+            Hit = hit;
+            HasHit = true;
             sceneVariables.Set("cam_raycast", hit);
             transform.position = hit.point;
         }
@@ -50,7 +52,7 @@ public class Raycast : MonoBehaviour
     }
     void ResetRaycast()
     {
-        Hit = false;
+        HasHit = false;
         sceneVariables.Set("cam_raycast", null);
         transform.position = Vector3.zero;
     }

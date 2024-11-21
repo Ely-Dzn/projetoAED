@@ -4,7 +4,9 @@
     "references": [
         "SpatialSys.UnitySDK",
         "Unity.TextMeshPro",
-        "Unity.VisualScripting.Core"
+        "Unity.VisualScripting.Core",
+        "Unity.Addressables",
+        "Unity.ResourceManager"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
