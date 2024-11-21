@@ -63,6 +63,7 @@ public class BookStackGroup : MonoBehaviour
 
         // Ghost Book
         var ghostBook = InstantiateBook();
+        ghostBook.name = "GhostBook";
         ghostBook.layer = Layers.Ghost;
         foreach (var c in ghostBook.GetComponentsInChildren<Collider>())
             c.gameObject.layer = Layers.Ghost;
@@ -110,8 +111,6 @@ public class BookStackGroup : MonoBehaviour
             else
                 Grabbed.transform.eulerAngles = player.rotation.eulerAngles + new Vector3(90, 90, 90);
         }
-
-        DebugUtils.Log(cam.zoomDistance.ToString());
     }
 
     public void ShowWarning(String text, StackSlot slot, Color color)
