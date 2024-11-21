@@ -24,12 +24,6 @@ public class Raycast : MonoBehaviour
         var rotationMode = cam.rotationMode;
 #endif
 
-        if (rotationMode != SCRM.PointerLock_Locked && rotationMode != SCRM.PointerLock_Unlocked)
-        {
-            ResetRaycast();
-            return;
-        }
-
         Ray ray;
         if (rotationMode == SCRM.PointerLock_Locked)
             ray = new(cam.position, cam.forward);
