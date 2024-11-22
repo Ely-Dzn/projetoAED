@@ -174,9 +174,9 @@
       "url": "https://packages.unity.com"
     },
     "io.spatial.unitysdk": {
-      "version": "1.60.0",
+      "version": "file:io.spatial.unitysdk",
       "depth": 0,
-      "source": "registry",
+      "source": "embedded",
       "dependencies": {
         "com.unity.scriptablebuildpipeline": "1.21.1",
         "com.unity.editorcoroutines": "1.0.0",
@@ -185,8 +185,7 @@
         "com.unity.ai.navigation": "1.0.0-exp.4",
         "com.unity.nuget.mono-cecil": "1.11.4",
         "com.unity.addressables": "1.21.17"
-      },
-      "url": "https://package.openupm.com"
+      }
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

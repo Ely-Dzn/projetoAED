@@ -1,0 +1,3 @@
+[submodule "Packages/io.spatial.unitysdk"]
+	path = Packages/io.spatial.unitysdk
+	url = https://github.com/TheFireBlast/spatial-unity-sdk
