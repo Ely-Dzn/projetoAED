@@ -79,6 +79,7 @@ public class BookQuests : MonoBehaviour
                         {
                             colorsDisplay.SetActive(false);
                             NextTask();
+                            break;
                         }
                     }
                     break;
