@@ -42,4 +42,9 @@ public static class Utils
             GameObject.Destroy(child.gameObject);
         }
     }
+
+    public static Quaternion QuaternionFromEuler(Vector3 euler)
+    {
+        return Quaternion.Euler(euler.x, euler.y, euler.z);
+    }
 }

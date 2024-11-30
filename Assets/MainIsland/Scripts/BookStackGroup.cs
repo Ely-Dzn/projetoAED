@@ -22,8 +22,8 @@ public class BookStackGroup : ListGroup<GameStack>
         for (int i = 0; i < Stacks[0].MaxSize; i++)
         {
             var book = InstantiateBook(colors[i % colors.Count]);
-            book.transform.rotation = GetRandomRotation();
             Stacks[0].Push(book, resetTransform: true);
+            book.transform.rotation = GetRandomRotation();
         }
 
         // Ghost Book
@@ -58,6 +58,12 @@ public class BookStackGroup : ListGroup<GameStack>
         return book;
     }
     protected override GameObject InstantiateItem() => InstantiateBook();
+
+    protected override Quaternion GetGrabbedRotation()
+    {
+        var player = SpatialBridge.actorService.localActor.avatar;
+        return Utils.QuaternionFromEuler(player.rotation.eulerAngles + new Vector3(90, 90, 90));
+    }
 
     public override void Grab(GameSlot slot)
     {

@@ -7,9 +7,9 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 [DisallowMultipleComponent]
-public class TestQueueGroup : ListGroup<GameQueue>
+public class TestQueueGroup : ListGroup<TestQueue>
 {
-    public List<GameQueue> Queues => Lists;
+    public List<TestQueue> Queues => Lists;
     public List<Color> colors;
     [SerializeField]
     private GameObject prefab;
@@ -85,15 +85,13 @@ public class TestQueueGroup : ListGroup<GameQueue>
             ShowWarning("Não pode colocar o X fora do fundo da fila", slot, Color.red);
             return;
         }
-        if (!stack.Push(Grabbed))
+        if (!stack.Push(Grabbed, resetTransform: true))
         {
-            ShowWarning("Não pode colocar livro numa fila já cheia", slot, Color.red);
+            ShowWarning("Não pode colocar X numa fila já cheia", slot, Color.red);
             return;
         }
 
         Grabbed.GetComponentInChildren<Collider>(true).enabled = true;
-        Grabbed.transform.localPosition = Vector3.zero;
-        Grabbed.transform.rotation = slot.transform.rotation;
         Grabbed = null;
         //TODO: colocar animação lerp
         //TODO: manter colisao desativada durante animação lerp

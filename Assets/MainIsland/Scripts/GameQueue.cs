@@ -18,19 +18,22 @@ public abstract class GameQueue : GameList
 
     public override void UpdateGhosts()
     {
-        if (FrontGhost && BackGhost)
+        // Caso esta classe ainda não tenha sido inicializada
+        if (FrontGhost == null || BackGhost == null) return; 
+
+        FrontGhost.enabled = Count > 0;
+        if (Count <= 0)
         {
-            FrontGhost.enabled = Count > 0;
-            if (Count <= 0)
-            {
-                BackGhost.index = 0;
-            }
-            else
-            {
-                FrontGhost.index = Slots[0].index - 1;
-                BackGhost.index = Slots[Count - 1].index + 1;
-            }
+            BackGhost.index = 0;
         }
+        else
+        {
+            FrontGhost.index = Slots[0].index - 1;
+            BackGhost.index = Slots[Count - 1].index + 1;
+            FrontGhost.transform.localPosition = FrontSlot.transform.localPosition - slotOffset;
+            BackGhost.transform.localPosition = BackSlot.transform.localPosition + slotOffset;
+        }
+
         base.UpdateGhosts();
     }
 
@@ -40,6 +43,7 @@ public abstract class GameQueue : GameList
         GameSlot slot = Slots[Count];
         slot.Insert(item, resetTransform);
         Count++;
+        slot.transform.localPosition = BackGhost.transform.localPosition;
         UpdateGhosts();
         return true;
     }

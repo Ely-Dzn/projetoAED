@@ -52,16 +52,27 @@ public abstract class ListGroup<L> : MonoBehaviour where L : GameList
 
     protected void Update()
     {
-        var cam = SpatialBridge.cameraService;
         if (Grabbed)
         {
             var player = SpatialBridge.actorService.localActor.avatar;
-            Grabbed.transform.position = player.position + new Vector3(0, 0.9f, 0) + player.rotation * Vector3.forward;
-            if (cam.zoomDistance < 1f)
-                Grabbed.transform.eulerAngles = cam.rotation.eulerAngles + new Vector3(90, 90, 90);
-            else
-                Grabbed.transform.eulerAngles = player.rotation.eulerAngles + new Vector3(90, 90, 90);
+            var targetPos = GetGrabbedPosition();
+            Quaternion targetRot = GetGrabbedRotation();
+
+            Grabbed.transform.SetPositionAndRotation(
+                Vector3.Lerp(Grabbed.transform.position, targetPos, Time.deltaTime * 7f),
+                Quaternion.Lerp(Grabbed.transform.rotation, targetRot, Time.deltaTime * 8f));
         }
+    }
+
+    protected virtual Vector3 GetGrabbedPosition()
+    {
+        var player = SpatialBridge.actorService.localActor.avatar;
+        return player.position + new Vector3(0, 0.9f, 0) + player.rotation * Vector3.forward;
+    }
+    protected virtual Quaternion GetGrabbedRotation()
+    {
+        var player = SpatialBridge.actorService.localActor.avatar;
+        return player.rotation;
     }
 
     public void ShowWarning(String text, GameSlot slot, Color color)

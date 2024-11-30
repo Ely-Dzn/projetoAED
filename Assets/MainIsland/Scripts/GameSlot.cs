@@ -37,6 +37,8 @@ public class GameSlot : MonoBehaviour
     public void Insert(GameObject item, bool resetTransform = false)
     {
         Item = item;
+        if (resetTransform)
+            item.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         item.transform.SetParent(transform, !resetTransform);
         if (outline == null)
             outline = GetComponentInChildren<Outline>(true);

@@ -21,7 +21,7 @@ public abstract class GameList : MonoBehaviour
 
     public List<GameSlot> ghostSlots = new();
     private bool pushMode = false;
-    public bool PushMode
+    public virtual bool PushMode
     {
         get => pushMode;
         set
@@ -61,7 +61,7 @@ public abstract class GameList : MonoBehaviour
             foreach (var slot in Slots)
             {
                 slot.onInteract += (s) => onInteract?.Invoke(s);
-                UpdateSlotPosition(slot);
+                ResetSlotPosition(slot);
             }
         }
 
@@ -81,7 +81,7 @@ public abstract class GameList : MonoBehaviour
         PushMode = false;
     }
 
-    protected void Update()
+    protected virtual void Update()
     {
         //StackSlot newTargetSlot = GetTargetSlot();
         //if (targetSlot != newTargetSlot)
@@ -104,15 +104,13 @@ public abstract class GameList : MonoBehaviour
             UpdateGhosts();
         }
 
-#if UNITY_EDITOR
         slotOffset = slotsContainer.transform.GetChild(0).localPosition;
         foreach (var slot in Slots)
         {
             UpdateSlotPosition(slot);
         }
-#endif
     }
-    protected GameSlot GetTargetSlot()
+    protected virtual GameSlot GetTargetSlot()
     {
         var player = SpatialBridge.actorService.localActor.avatar;
         var playerPos = player.position;
@@ -127,7 +125,7 @@ public abstract class GameList : MonoBehaviour
         }
         return slot;
     }
-    protected void UpdateSlot(GameSlot slot)
+    protected virtual void UpdateSlot(GameSlot slot)
     {
         if (slot == null) return;
         var isTarget = slot == targetSlot;
@@ -137,18 +135,27 @@ public abstract class GameList : MonoBehaviour
             slot.outline.enabled = isTarget;
     }
 
-    protected void DefaultOnInteract(GameSlot slot)
+    protected virtual void DefaultOnInteract(GameSlot slot)
     {
         //TODO
     }
 
-    public void UpdateSlotPosition(GameSlot slot)
+    public virtual void UpdateSlotPosition(GameSlot slot)
+    {
+        if (slotPrefab == null) return;
+        var target = slotOffset * slot.index;
+        slot.transform.localPosition = Vector3.Lerp(
+            slot.transform.localPosition,
+            target,
+            Time.deltaTime);
+    }
+    public virtual void ResetSlotPosition(GameSlot slot)
     {
         if (slotPrefab == null) return;
         slot.transform.localPosition = slotOffset * slot.index;
     }
 
-    protected GameSlot MakeSlot()
+    protected virtual GameSlot MakeSlot()
     {
         GameSlot slot;
         if (slotPrefab == null)
@@ -175,16 +182,16 @@ public abstract class GameList : MonoBehaviour
         return slot;
     }
 
-    public GameSlot AddSlot()
+    public virtual GameSlot AddSlot()
     {
         var slot = MakeSlot();
         slot.index = Slots.Count;
         Slots.Add(slot);
-        UpdateSlotPosition(slot);
+        ResetSlotPosition(slot);
         return slot;
     }
 
-    public GameSlot FindSlot(GameObject item)
+    public virtual GameSlot FindSlot(GameObject item)
     {
         var target = item.transform;
         GameSlot slot;

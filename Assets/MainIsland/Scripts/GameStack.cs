@@ -15,7 +15,18 @@ public class GameStack : GameList
 
     public override void UpdateGhosts()
     {
-        if (TopGhost) TopGhost.index = Count;
+        if (TopGhost == null) return;
+
+        if (Count <= 0)
+        {
+            TopGhost.index = 0;
+        }
+        else
+        {
+            TopGhost.index = Slots[Count - 1].index + 1;
+            TopGhost.transform.localPosition = TopSlot.transform.localPosition + slotOffset;
+        }
+
         base.UpdateGhosts();
     }
 
@@ -25,6 +36,7 @@ public class GameStack : GameList
         GameSlot slot = Slots[Count];
         slot.Insert(item, resetTransform);
         Count++;
+        slot.transform.localPosition = TopGhost.transform.localPosition;
         UpdateGhosts();
         return true;
     }
