@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using SpatialSys.UnitySDK;
-using System.Threading.Tasks;
-using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class BookQuests : MonoBehaviour
@@ -21,9 +19,9 @@ public class BookQuests : MonoBehaviour
     {
         quest = GetComponent<SpatialQuest>();
         stacks = GetComponent<BookStackGroup>();
-        yield return new WaitUntil(() => stacks.Stacks != null && stacks.Stacks.Count > 0 && stacks.Stacks[0].Count > 0);
+        yield return new WaitUntil(() => stacks.Lists != null && stacks.Lists.Count > 0 && stacks.Lists[0].Count > 0);
         initialBooks = new();
-        foreach (var slot in stacks.Stacks[0].Slots)
+        foreach (var slot in stacks.Lists[0].Slots)
         {
             initialBooks.Add(slot.Item);
         }
@@ -47,7 +45,7 @@ public class BookQuests : MonoBehaviour
         {
             case 1:
                 {
-                    foreach (var stack in stacks.Stacks)
+                    foreach (var stack in stacks.Lists)
                     {
                         if (stack.Count == 1 && stack.Slots[0].Item == initialBooks[1])
                         {
@@ -66,7 +64,7 @@ public class BookQuests : MonoBehaviour
                         el.color = stacks.colors[task1Order[i]];
                     }
 
-                    foreach (var stack in stacks.Stacks)
+                    foreach (var stack in stacks.Lists)
                     {
                         int progress = 0;
                         for (int i = 0; i < stack.Count; i++)

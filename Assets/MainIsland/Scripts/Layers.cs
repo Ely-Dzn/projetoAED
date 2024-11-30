@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
-
-public static class Layers
+﻿public static class Layers
 {
     public const int Default = 0;
     public const int DefaultMask = 1 << Default;

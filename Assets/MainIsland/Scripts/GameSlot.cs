@@ -2,16 +2,16 @@
 using SpatialSys.UnitySDK;
 using UnityEngine;
 
-public class StackSlot : MonoBehaviour
+public class GameSlot : MonoBehaviour
 {
-    public GameStack Parent;
+    public GameList Parent;
     public int index;
     [field: SerializeField]
     public GameObject Item { get; protected set; }
     public bool IsFilled => Item != null;
     public SpatialInteractable interactable;
     public Outline outline;
-    public delegate void OnInteract(StackSlot slot);
+    public delegate void OnInteract(GameSlot slot);
     public OnInteract onInteract;
 
     void Start()

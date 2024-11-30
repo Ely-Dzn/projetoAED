@@ -1,7 +1,6 @@
+using SpatialSys.UnitySDK;
 using Unity.VisualScripting;
 using UnityEngine;
-using SpatialSys.UnitySDK;
-
 using SCRM = SpatialSys.UnitySDK.SpatialCameraRotationMode;
 
 public class Raycast : MonoBehaviour
