@@ -20,22 +20,16 @@ public abstract class GameList : MonoBehaviour
     public OnInteract onInteract;
 
     public List<GameSlot> ghostSlots = new();
-    private bool pushMode = false;
+    protected bool pushMode = false;
     public virtual bool PushMode
     {
         get => pushMode;
         set
         {
             pushMode = value;
-            foreach (var slot in Slots)
-            {
-                if (slot.interactable != null)
-                    slot.interactable.interactText = pushMode ? "Colocar" : "Retirar";
-            }
             UpdateGhosts();
         }
     }
-
 
     public virtual void Start()
     {
@@ -133,6 +127,7 @@ public abstract class GameList : MonoBehaviour
             slot.interactable.enabled = isTarget;
         if (slot.outline != null)
             slot.outline.enabled = isTarget;
+        UpdateInteractText(slot);
     }
 
     protected virtual void DefaultOnInteract(GameSlot slot)
@@ -153,6 +148,11 @@ public abstract class GameList : MonoBehaviour
     {
         if (slotPrefab == null) return;
         slot.transform.localPosition = slotOffset * slot.index;
+    }
+    protected virtual void UpdateInteractText(GameSlot slot)
+    {
+        if (slot.interactable != null)
+            slot.interactable.interactText = pushMode ? "push" : "pop";
     }
 
     protected virtual GameSlot MakeSlot()
