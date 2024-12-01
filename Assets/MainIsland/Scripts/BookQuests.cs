@@ -86,10 +86,13 @@ public class BookQuests : MonoBehaviour
                 }
         }
 
-        DebugUtils.Log(currentTask.name
-            + " " + currentTask.progress
-            + "/" + currentTask.progressSteps
-            + " " + currentTask.status);
+        if (currentTask != null)
+        {
+            DebugUtils.Log(currentTask.name
+                + " " + currentTask.progress
+                + "/" + currentTask.progressSteps
+                + " " + currentTask.status);
+        }
     }
 
     void NextTask()
