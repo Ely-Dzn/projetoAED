@@ -10,6 +10,7 @@ public class BookQuests : MonoBehaviour
     private BookStackGroup stacks;
     private IQuestTask currentTask;
     private int currentTaskIdx;
+    private int prevTaskIdx = -1;
     private List<GameObject> initialBooks;
     [SerializeField]
     private GameObject colorsDisplay;
@@ -19,7 +20,9 @@ public class BookQuests : MonoBehaviour
     {
         quest = GetComponent<SpatialQuest>();
         stacks = GetComponent<BookStackGroup>();
+
         yield return new WaitUntil(() => stacks.Lists != null && stacks.Lists.Count > 0 && stacks.Lists[0].Count > 0);
+
         initialBooks = new();
         foreach (var slot in stacks.Lists[0].Slots)
         {
@@ -31,59 +34,25 @@ public class BookQuests : MonoBehaviour
 
     void Update()
     {
-        // Inicializar a lista aqui pois o BookStackGroup não estava pronto no Start
-        if (initialBooks == null) return;
+        if (initialBooks == null || currentTask == null) return;
 
         if (Input.GetKeyDown(KeyCode.O))
         {
             NextTask();
         }
 
-        if (currentTask == null) return;
+        var taskChanged = prevTaskIdx != currentTaskIdx;
+        prevTaskIdx = currentTaskIdx;
 
         switch (currentTask.id)
         {
             case 1:
-                {
-                    foreach (var stack in stacks.Lists)
-                    {
-                        if (stack.Count == 1 && stack.Slots[0].Item == initialBooks[1])
-                        {
-                            NextTask();
-                        }
-                    }
-                    break;
-                }
+                Task1();
+                break;
             case 2:
-                {
-                    //TODO: mover para uuma função de inicialização
-                    colorsDisplay.SetActive(true);
-                    for (int i = 0; i < colorsDisplay.transform.childCount; i++)
-                    {
-                        var el = colorsDisplay.transform.GetChild(i).GetComponent<RawImage>();
-                        el.color = stacks.colors[task1Order[i]];
-                    }
-
-                    foreach (var stack in stacks.Lists)
-                    {
-                        int progress = 0;
-                        for (int i = 0; i < stack.Count; i++)
-                        {
-                            if (stack.Slots[i].Item == initialBooks[task1Order[i]])
-                            {
-                                progress++;
-                            }
-                        }
-                        currentTask.progress = progress;
-                        if (progress == 5)
-                        {
-                            colorsDisplay.SetActive(false);
-                            NextTask();
-                            break;
-                        }
-                    }
-                    break;
-                }
+                if (taskChanged) Task2Init();
+                Task2();
+                break;
         }
 
         if (currentTask != null)
@@ -92,6 +61,10 @@ public class BookQuests : MonoBehaviour
                 + " " + currentTask.progress
                 + "/" + currentTask.progressSteps
                 + " " + currentTask.status);
+        }
+        else if (taskChanged)
+        {
+            DebugUtils.Log("...");
         }
     }
 
@@ -107,6 +80,48 @@ public class BookQuests : MonoBehaviour
             return;
         }
         currentTask = quest.quest.tasks[currentTaskIdx];
-        if (currentTask == null) return;
     }
+
+    void Task1()
+    {
+        foreach (var stack in stacks.Lists)
+        {
+            if (stack.Count == 1 && stack.Slots[0].Item == initialBooks[1])
+            {
+                NextTask();
+            }
+        }
+    }
+
+    void Task2Init()
+    {
+        colorsDisplay.SetActive(true);
+        for (int i = 0; i < colorsDisplay.transform.childCount; i++)
+        {
+            var el = colorsDisplay.transform.GetChild(i).GetComponent<RawImage>();
+            el.color = stacks.colors[task1Order[i]];
+        }
+    }
+    void Task2()
+    {
+        foreach (var stack in stacks.Lists)
+        {
+            int progress = 0;
+            for (int i = 0; i < stack.Count; i++)
+            {
+                if (stack.Slots[i].Item == initialBooks[task1Order[i]])
+                {
+                    progress++;
+                }
+            }
+            currentTask.progress = progress;
+            if (progress == 5)
+            {
+                colorsDisplay.SetActive(false);
+                NextTask();
+                break;
+            }
+        }
+    }
+
 }
