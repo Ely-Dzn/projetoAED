@@ -23,16 +23,10 @@ public abstract class ListGroup<L> : MonoBehaviour where L : GameList
             }
         }
     }
-    protected GameObject warningPrefab;
     protected Material transparentMaterial;
-
-    protected GameObject warningCanvas;
-    protected TMP_Text warningText;
-    protected GameSlot warned = null;
 
     protected void Start()
     {
-        warningPrefab = AssetManager.Load<GameObject>("Prefabs/Warning");
         transparentMaterial = AssetManager.Load<Material>("Materials/Transparent");
 
         Lists = Utils.GetChildren<L>(container.transform);
@@ -42,10 +36,6 @@ public abstract class ListGroup<L> : MonoBehaviour where L : GameList
             list.Start();
             list.onInteract = OnInteract;
         }
-
-        // Warnings
-        warningCanvas = Instantiate(warningPrefab);
-        warningText = warningCanvas.GetComponentInChildren<TextMeshProUGUI>();
     }
 
     protected abstract GameObject InstantiateItem();
@@ -75,34 +65,6 @@ public abstract class ListGroup<L> : MonoBehaviour where L : GameList
         return player.rotation;
     }
 
-    public void ShowWarning(String text, GameSlot slot, Color color)
-    {
-        ClearWarning();
-        warned = slot;
-        warningText.text = text;
-        var player = SpatialBridge.actorService.localActor.avatar;
-        var dir = player.position - slot.transform.position;
-        dir.y = 0;
-        dir.Normalize();
-        warningCanvas.transform.SetPositionAndRotation(
-            slot.transform.position + dir,
-            Quaternion.LookRotation(-dir));
-        warningCanvas.SetActive(true);
-        if (warned.outline != null)
-            warned.outline.OutlineColor = color;
-        Invoke(nameof(ClearWarning), 2f);
-    }
-    public void ClearWarning()
-    {
-        CancelInvoke(nameof(ClearWarning));
-        if (warned != null)
-        {
-            if (warned.outline != null)
-                warned.outline.OutlineColor = Color.white;
-            warningCanvas.SetActive(false);
-            warned = null;
-        }
-    }
     void OnInteract(GameSlot slot)
     {
         if (Grabbed)

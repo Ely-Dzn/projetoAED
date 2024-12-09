@@ -71,13 +71,13 @@ public class BookStackGroup : ListGroup<GameStack>
 
         if (slot.index != stack.Count - 1)
         {
-            ShowWarning("Não pode pegar livro fora do topo", slot, Color.red);
+            stack.ShowWarning("Não pode pegar livro fora do topo", slot);
             return;
         }
         var item = slot.Item;
         if (!stack.Pop())
         {
-            ShowWarning("Não pode tirar livro de uma pilha vazia", slot, Color.red);
+            stack.ShowWarning("Não pode tirar livro de uma pilha vazia", slot);
             return;
         }
 
@@ -97,12 +97,12 @@ public class BookStackGroup : ListGroup<GameStack>
 
         if (slot.index != stack.Count)
         {
-            ShowWarning("Não pode colocar o livro fora do topo", slot, Color.red);
+            stack.ShowWarning("Não pode colocar o livro fora do topo", slot);
             return;
         }
         if (!stack.Push(Grabbed))
         {
-            ShowWarning("Não pode colocar livro numa pilha já cheia", slot, Color.red);
+            stack.ShowWarning("Não pode colocar livro numa pilha já cheia", slot);
             return;
         }
 

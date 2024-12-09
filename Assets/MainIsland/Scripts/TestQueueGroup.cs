@@ -38,10 +38,6 @@ public class TestQueueGroup : ListGroup<TestQueue>
             queue.BackGhost.Insert(Instantiate(ghost), resetTransform: true);
         }
         Destroy(ghost);
-
-        // Warnings
-        warningCanvas = Instantiate(warningPrefab);
-        warningText = warningCanvas.GetComponentInChildren<TextMeshProUGUI>();
     }
 
     protected GameObject InstantiateItem(Color c)
@@ -64,13 +60,13 @@ public class TestQueueGroup : ListGroup<TestQueue>
 
         if (slot != queue.FrontSlot)
         {
-            ShowWarning("Não pode pegar X fora da frente", slot, Color.red);
+            queue.ShowWarning("Não pode pegar X fora da frente", slot);
             return;
         }
         var item = slot.Item;
         if (!queue.Pop())
         {
-            ShowWarning("Não pode tirar X de uma fila vazia", slot, Color.red);
+            queue.ShowWarning("Não pode tirar X de uma fila vazia", slot);
             return;
         }
         Grabbed = item;
@@ -78,16 +74,16 @@ public class TestQueueGroup : ListGroup<TestQueue>
     }
     public override void Release(GameSlot slot)
     {
-        var stack = (TestQueue)slot.Parent;
+        var queue = (TestQueue)slot.Parent;
 
-        if (slot != stack.BackGhost)
+        if (slot != queue.BackGhost)
         {
-            ShowWarning("Não pode colocar o X fora do fundo da fila", slot, Color.red);
+            queue.ShowWarning("Não pode colocar o X fora do fundo da fila", slot);
             return;
         }
-        if (!stack.Push(Grabbed, resetTransform: true))
+        if (!queue.Push(Grabbed, resetTransform: true))
         {
-            ShowWarning("Não pode colocar X numa fila já cheia", slot, Color.red);
+            queue.ShowWarning("Não pode colocar X numa fila já cheia", slot);
             return;
         }
 

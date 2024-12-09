@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SpatialSys.UnitySDK;
 using UnityEngine;
 
@@ -21,6 +22,8 @@ public abstract class GameList : MonoBehaviour
 
     public List<GameSlot> ghostSlots = new();
     protected bool pushMode = false;
+
+    protected GameSlot warnedSlot = null;
     public virtual bool PushMode
     {
         get => pushMode;
@@ -228,6 +231,25 @@ public abstract class GameList : MonoBehaviour
             UpdateSlot(slot);
             UpdateSlotPosition(slot);
             slot.gameObject.SetActive(pushMode);
+        }
+    }
+    public void ShowWarning(String text, GameSlot slot)
+    {
+        ClearWarning();
+        MessageDisplay.ShowWarning(text, slot.transform);
+        warnedSlot = slot;
+        if (warnedSlot.outline != null)
+            warnedSlot.outline.OutlineColor = Color.red;
+        Invoke(nameof(ClearWarning), 2f);
+    }
+    public void ClearWarning()
+    {
+        CancelInvoke(nameof(ClearWarning));
+        if (warnedSlot != null)
+        {
+            if (warnedSlot.outline != null)
+                warnedSlot.outline.OutlineColor = Color.white;
+            warnedSlot = null;
         }
     }
 }
