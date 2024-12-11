@@ -4,16 +4,21 @@ using UnityEngine;
 
 public class MessageDisplay : MonoBehaviour
 {
-    private static MessageDisplay INSTANCE;
+    //TODO: renomear "main" e permitir múltiplas instâncias
+    public static MessageDisplay Instance { get; private set; }
 
-    private static GameObject messagePrefab;
-    private static GameObject canvas;
-    private static TMP_Text tmptext;
-    private static Transform target = null;
+    [SerializeField]
+    private GameObject messagePrefab;
+    [SerializeField]
+    private GameObject canvas;
+    [SerializeField]
+    private TMP_Text tmptext;
+    [SerializeField]
+    private Transform target = null;
 
-    private void Start()
+    private void Awake()
     {
-        INSTANCE = this;
+        Instance = this;
 
         messagePrefab = AssetManager.Load<GameObject>("Prefabs/Warning");
 
@@ -23,10 +28,10 @@ public class MessageDisplay : MonoBehaviour
         canvas.SetActive(false);
     }
 
-    public static void ShowWarning(string text, Transform target)
+    public void ShowWarning(string text, Transform target)
     {
-        INSTANCE.ClearMessage();
-        MessageDisplay.target = target;
+        ClearMessage();
+        this.target = target;
         tmptext.text = text;
         var player = SpatialBridge.actorService.localActor.avatar;
         var dir = player.position - target.position;
@@ -36,7 +41,7 @@ public class MessageDisplay : MonoBehaviour
             target.position + dir,
             Quaternion.LookRotation(-dir));
         canvas.SetActive(true);
-        INSTANCE.Invoke(nameof(ClearMessage), 2f);
+        Invoke(nameof(ClearMessage), 2f);
     }
     private void ClearMessage()
     {

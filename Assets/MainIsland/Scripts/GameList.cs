@@ -20,6 +20,7 @@ public abstract class GameList : MonoBehaviour
     public List<GameSlot> ghostSlots = new();
     protected GameSlot warnedSlot = null;
     public Object grabGroup;
+    public SpatialTriggerEvent grabArea = null;
 
     protected virtual void Awake()
     {
@@ -231,7 +232,7 @@ public abstract class GameList : MonoBehaviour
     public void ShowWarning(string text, GameSlot slot)
     {
         ClearWarning();
-        MessageDisplay.ShowWarning(text, slot.transform);
+        MessageDisplay.Instance.ShowWarning(text, slot.transform);
         warnedSlot = slot;
         if (warnedSlot.outline != null)
             warnedSlot.outline.OutlineColor = Color.red;

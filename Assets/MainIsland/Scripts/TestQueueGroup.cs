@@ -27,8 +27,6 @@ public class TestQueueGroup : ListGroup<TestQueue>
 
         // Ghost
         var ghost = InstantiateItem();
-        foreach (var c in ghost.GetComponentsInChildren<Collider>())
-            c.gameObject.layer = Layers.Ghost;
         var r = ghost.GetComponentInChildren<Renderer>();
         r.materials = Enumerable.Repeat(transparentMaterial, r.materials.Length).ToArray();
         foreach (var queue in Queues)

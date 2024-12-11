@@ -25,15 +25,8 @@ public class BookStackGroup : ListGroup<GameStack>
             book.transform.rotation = GetRandomRotation();
         }
 
-        foreach (var stack in Stacks)
-        {
-            stack.grabGroup = this;
-        }
-
         // Livro fantasma do topo da pilha
         var ghostBook = InstantiateBook();
-        foreach (var c in ghostBook.GetComponentsInChildren<Collider>())
-            c.gameObject.layer = Layers.Ghost;
         var r = ghostBook.GetComponentInChildren<Renderer>();
         r.materials = Enumerable.Repeat(transparentMaterial, r.materials.Length).ToArray();
         foreach (var stack in Stacks)

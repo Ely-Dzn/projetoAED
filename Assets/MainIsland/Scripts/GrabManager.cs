@@ -1,31 +1,34 @@
-﻿using SpatialSys.UnitySDK;
+﻿using System;
+using SpatialSys.UnitySDK;
 using UnityEngine;
 
 //TODO: suporte a multiplayer
 public class GrabManager : MonoBehaviour
 {
-    private static GrabManager INSTANCE;
+    public static GrabManager Instance { get; private set; }
     public class GrabInfo
     {
-        public Transform target;
+        public Transform transform;
+        public GameObject gameObject => transform != null ? transform.gameObject : null;
         public object extra = null;
         public object group = null;
         /// <summary>
         ///  Limites do objeto a ser agarrado.
         ///  Caso o jogador esteja fora dessa área, o objeto é solto.
         /// </summary>
-        public Collider area;
+        public SpatialTriggerEvent area = null;
+        public Action areaExitHandler = null;
         //TODO
         //public Vector3 position = Vector3.zero;
         //public Quaternion rotation = Quaternion.identity;
         //public Vector3 scale = Vector3.one;
         public GrabInfo(Transform target)
         {
-            this.target = target;
+            this.transform = target;
         }
         public GrabInfo(GameObject target)
         {
-            this.target = target.transform;
+            this.transform = target.transform;
         }
         public static implicit operator bool(GrabInfo info)
         {
@@ -33,11 +36,19 @@ public class GrabManager : MonoBehaviour
         }
     }
 
-    public static GrabInfo Grabbed { get; private set; } = null;
-
-    void Start()
+    public GrabInfo grabbed { get; private set; } = null;
+    public static GrabInfo Grabbed
     {
-        INSTANCE = this;
+        get
+        {
+            if (!Instance) return null;
+            return Instance.grabbed;
+        }
+    }
+
+    void Awake()
+    {
+        Instance = this;
     }
 
     void Update()
@@ -49,30 +60,53 @@ public class GrabManager : MonoBehaviour
             var targetPos = player.position + new Vector3(0, 0.9f, 0) + player.rotation * Vector3.forward;
             var targetRot = player.rotation;
 
-            Grabbed.target.SetPositionAndRotation(
-                Vector3.Lerp(Grabbed.target.position, targetPos, Time.deltaTime * 7f),
-                Quaternion.Lerp(Grabbed.target.rotation, targetRot, Time.deltaTime * 8f));
+            Grabbed.transform.SetPositionAndRotation(
+                Vector3.Lerp(Grabbed.transform.position, targetPos, Time.deltaTime * 7f),
+                Quaternion.Lerp(Grabbed.transform.rotation, targetRot, Time.deltaTime * 8f));
         }
     }
 
     public static bool Grab(GrabInfo info, bool lerp = true)
     {
-        if (Grabbed != null) return false;
-        Grabbed = info;
-        Grabbed.target.SetParent(INSTANCE.transform, worldPositionStays: true);
+        if (Grabbed != null || info == null || info.transform == null) return false;
+        Instance.grabbed = info;
+        Grabbed.transform.SetParent(Instance.transform, worldPositionStays: true);
+        if (Grabbed.area != null)
+        {
+            Grabbed.area.onExitEvent += HandleAreaExit;
+        }
         if (!lerp)
         {
-            Grabbed.target.SetLocalPositionAndRotation(
+            Grabbed.transform.SetLocalPositionAndRotation(
                 Vector3.zero,
                 Quaternion.identity);
         }
         return true;
     }
-    public static Transform Release()
+    public static GrabInfo Release()
     {
         if (Grabbed == null) return null;
-        var x = Grabbed.target;
-        Grabbed = null;
-        return x;
+        if (Grabbed.area != null)
+        {
+            Grabbed.area.onExitEvent -= HandleAreaExit;
+        }
+        var item = Grabbed;
+        Instance.grabbed = null;
+        return item;
+    }
+    private static void HandleAreaExit()
+    {
+        Debug.Log("HandleAreaExit");
+        if (Grabbed != null)
+        {
+            if (Grabbed.areaExitHandler != null)
+            {
+                Grabbed.areaExitHandler();
+            }
+            else
+            {
+                Release();
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - CustomLayer1
+  - RaycastIgnore
   - CustomLayer2
   - CustomLayer3
   - CustomLayer4

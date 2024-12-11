@@ -58,7 +58,7 @@ public abstract class GameQueue : GameList
     {
         if (GrabManager.Grabbed)
         {
-            if (ReferenceEquals(GrabManager.Grabbed.group, this))
+            if (!ReferenceEquals(GrabManager.Grabbed.group, grabGroup))
             {
                 ShowWarning(Warning.WrongGroup, slot);
                 return false;
@@ -74,14 +74,12 @@ public abstract class GameQueue : GameList
                 return false;
             }
 
-            var item = GrabManager.Release();
+            var item = GrabManager.Release().transform;
             Push(item.gameObject);
 
             item.GetComponentInChildren<Collider>(true).enabled = true;
-            item.transform.localPosition = Vector3.zero;
-            item.transform.rotation = slot.transform.rotation;
-            //TODO: colocar animação lerp
-            //TODO: manter colisao desativada durante animação lerp
+            item.localPosition = Vector3.zero;
+            item.rotation = slot.transform.rotation;
         }
         else
         {
@@ -101,8 +99,11 @@ public abstract class GameQueue : GameList
             GrabManager.Grab(new GrabManager.GrabInfo(item)
             {
                 group = grabGroup,
-                //TODO
-                //area = ...
+                area = grabArea,
+                areaExitHandler = () =>
+                {
+                    Push(GrabManager.Release().gameObject, resetTransform: true);
+                }
             });
             item.GetComponentInChildren<Collider>(true).enabled = false;
         }

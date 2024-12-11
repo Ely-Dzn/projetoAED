@@ -31,7 +31,7 @@ public class BookQuests : MonoBehaviour
         //TODO: usar "yield return null;"
         yield return new WaitUntil(() => stacks.Lists != null && stacks.Lists.Count > 0 && stacks.Lists[0].Count > 0);
 
-        stacks.OnInteract += (slot, list) =>
+        stacks.OnInteractEvent += (slot, list) =>
         {
             if (currentTask == null) return;
             playing = true;
