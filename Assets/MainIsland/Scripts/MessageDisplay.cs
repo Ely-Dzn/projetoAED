@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using SpatialSys.UnitySDK;
+﻿using SpatialSys.UnitySDK;
 using TMPro;
 using UnityEngine;
 
@@ -25,7 +23,7 @@ public class MessageDisplay : MonoBehaviour
         canvas.SetActive(false);
     }
 
-    public static void ShowWarning(String text, Transform target)
+    public static void ShowWarning(string text, Transform target)
     {
         INSTANCE.ClearMessage();
         MessageDisplay.target = target;

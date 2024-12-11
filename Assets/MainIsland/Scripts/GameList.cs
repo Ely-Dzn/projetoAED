@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SpatialSys.UnitySDK;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public abstract class GameList : MonoBehaviour
 {
-    protected bool initialized = false;
     [SerializeField]
     protected GameObject slotsContainer;
     public GameObject slotPrefab;
@@ -17,34 +15,23 @@ public abstract class GameList : MonoBehaviour
     [field: SerializeField, ReadOnly]
     public int Count { get; protected set; } = 0;
     public GameSlot targetSlot = null;
-    public delegate void OnInteract(GameSlot slot);
-    public OnInteract onInteract;
-
+    public delegate void InteractHandler(GameSlot slot, GameList list);
+    public event InteractHandler OnInteractEvent;
     public List<GameSlot> ghostSlots = new();
-    protected bool pushMode = false;
-
     protected GameSlot warnedSlot = null;
-    public virtual bool PushMode
-    {
-        get => pushMode;
-        set
-        {
-            pushMode = value;
-            UpdateGhosts();
-        }
-    }
+    public Object grabGroup;
 
-    public virtual void Start()
+    protected virtual void Awake()
     {
-        if (initialized) return;
-        initialized = true;
+        grabGroup = this;
+        Slots = new();
 
         if (slotPrefab != null)
         {
-            Slots = new();
             slotOffset = slotsContainer.transform.GetChild(0).localPosition;
             while (Slots.Count < MaxSize)
             {
+                //TODO: slots sob demanda
                 AddSlot();
             }
         }
@@ -53,11 +40,11 @@ public abstract class GameList : MonoBehaviour
             Slots = Utils.GetChildren<GameSlot>(slotsContainer.transform);
             if (Slots.Count == 0)
             {
-                throw new System.Exception("Prefab de slot não definido nem há slots preexistentes");
+                throw new System.Exception("Prefab de slot não definido mas não há slots preexistentes");
             }
             foreach (var slot in Slots)
             {
-                slot.onInteract += (s) => onInteract?.Invoke(s);
+                slot.OnInteractEvent += _OnInteract;
                 ResetSlotPosition(slot);
             }
         }
@@ -72,23 +59,10 @@ public abstract class GameList : MonoBehaviour
                 slot.outline.enabled = false;
             slot.index = i;
         }
-
-        onInteract ??= DefaultOnInteract;
-
-        PushMode = false;
     }
 
     protected virtual void Update()
     {
-        //StackSlot newTargetSlot = GetTargetSlot();
-        //if (targetSlot != newTargetSlot)
-        //{
-        //    var _targetSlot = targetSlot;
-        //    targetSlot = newTargetSlot;
-        //    UpdateSlot(_targetSlot);
-        //    UpdateSlot(newTargetSlot);
-        //}
-
         targetSlot = GetTargetSlot();
         foreach (var slot in Slots)
         {
@@ -96,7 +70,7 @@ public abstract class GameList : MonoBehaviour
             //UpdateSlotPosition(slot);
         }
 
-        if (pushMode)
+        if (PlayerCanRelease())
         {
             UpdateGhosts();
         }
@@ -109,13 +83,11 @@ public abstract class GameList : MonoBehaviour
     }
     protected virtual GameSlot GetTargetSlot()
     {
-        var player = SpatialBridge.actorService.localActor.avatar;
-        var playerPos = player.position;
         GameSlot slot = null;
         if (Raycast.HasHit)
         {
             slot = FindSlot(Raycast.Hit.transform.gameObject);
-            if (slot != null && slot.interactable && !Utils.IsInteractableInRange(slot.interactable, playerPos))
+            if (slot != null && slot.interactable && !Utils.IsInteractableInRange(slot.interactable))
             {
                 slot = null;
             }
@@ -133,9 +105,28 @@ public abstract class GameList : MonoBehaviour
         UpdateInteractText(slot);
     }
 
-    protected virtual void DefaultOnInteract(GameSlot slot)
+    protected virtual bool PlayerCanRelease()
     {
-        //TODO
+        var grabbed = GrabManager.Grabbed;
+        if (grabbed)
+        {
+            if (!ReferenceEquals(grabbed.group, grabGroup))
+                return false;
+            return true;
+        }
+        return false;
+    }
+
+    protected virtual bool OnInteract(GameSlot slot)
+    {
+        if (slot == null) return false;
+        if (GrabManager.Grabbed && !PlayerCanRelease()) return false;
+        return true;
+    }
+    protected void _OnInteract(GameSlot slot)
+    {
+        if (!OnInteract(slot)) return;
+        OnInteractEvent?.Invoke(slot, this);
     }
 
     public virtual void UpdateSlotPosition(GameSlot slot)
@@ -155,7 +146,7 @@ public abstract class GameList : MonoBehaviour
     protected virtual void UpdateInteractText(GameSlot slot)
     {
         if (slot.interactable != null)
-            slot.interactable.interactText = pushMode ? "push" : "pop";
+            slot.interactable.interactText = GrabManager.Grabbed ? "push" : "pop";
     }
 
     protected virtual GameSlot MakeSlot()
@@ -181,7 +172,7 @@ public abstract class GameList : MonoBehaviour
             slot.gameObject.SetActive(true);
         }
         slot.Parent = this;
-        slot.onInteract += (s) => onInteract?.Invoke(s);
+        slot.OnInteractEvent += _OnInteract;
         return slot;
     }
 
@@ -228,12 +219,16 @@ public abstract class GameList : MonoBehaviour
     {
         foreach (var slot in ghostSlots)
         {
-            UpdateSlot(slot);
-            UpdateSlotPosition(slot);
-            slot.gameObject.SetActive(pushMode);
+            bool canRelease = PlayerCanRelease();
+            slot.gameObject.SetActive(canRelease);
+            if (canRelease)
+            {
+                UpdateSlot(slot);
+                UpdateSlotPosition(slot);
+            }
         }
     }
-    public void ShowWarning(String text, GameSlot slot)
+    public void ShowWarning(string text, GameSlot slot)
     {
         ClearWarning();
         MessageDisplay.ShowWarning(text, slot.transform);
@@ -251,5 +246,14 @@ public abstract class GameList : MonoBehaviour
                 warnedSlot.outline.OutlineColor = Color.white;
             warnedSlot = null;
         }
+    }
+
+    public bool IsEmpty()
+    {
+        return Count == 0;
+    }
+    public bool IsFull()
+    {
+        return Count >= MaxSize;
     }
 }

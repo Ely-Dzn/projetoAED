@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using SpatialSys.UnitySDK;
+﻿using SpatialSys.UnitySDK;
 using UnityEngine;
 
 public class GameSlot : MonoBehaviour
@@ -11,8 +10,8 @@ public class GameSlot : MonoBehaviour
     public bool IsFilled => Item != null;
     public SpatialInteractable interactable;
     public Outline outline;
-    public delegate void OnInteract(GameSlot slot);
-    public OnInteract onInteract;
+    public delegate void InteractHandler(GameSlot slot);
+    public event InteractHandler OnInteractEvent;
 
     void Start()
     {
@@ -31,7 +30,7 @@ public class GameSlot : MonoBehaviour
 
     void SendOnInteract()
     {
-        onInteract?.Invoke(this);
+        OnInteractEvent?.Invoke(this);
     }
 
     public void Insert(GameObject item, bool resetTransform = false)
@@ -43,7 +42,7 @@ public class GameSlot : MonoBehaviour
         if (outline == null)
             outline = GetComponentInChildren<Outline>(true);
     }
-    public GameObject Remove()
+    public GameObject Extract()
     {
         var oldItem = Item;
         Item = null;

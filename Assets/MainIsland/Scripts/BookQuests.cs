@@ -28,7 +28,14 @@ public class BookQuests : MonoBehaviour
         quest = GetComponent<SpatialQuest>();
         stacks = GetComponent<BookStackGroup>();
 
+        //TODO: usar "yield return null;"
         yield return new WaitUntil(() => stacks.Lists != null && stacks.Lists.Count > 0 && stacks.Lists[0].Count > 0);
+
+        stacks.OnInteract += (slot, list) =>
+        {
+            if (currentTask == null) return;
+            playing = true;
+        };
 
         initialBooks = new();
         foreach (var slot in stacks.Lists[0].Slots)
@@ -46,12 +53,6 @@ public class BookQuests : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.O))
         {
             NextTask();
-        }
-
-        //TODO: trocar por evento, ou chamar um método daqui do grupo
-        if (stacks.Grabbed)
-        {
-            playing = true;
         }
 
         if (!playing) return;

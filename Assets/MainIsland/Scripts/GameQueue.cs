@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class GameQueue : GameList
@@ -7,10 +5,9 @@ public abstract class GameQueue : GameList
     public GameSlot FrontGhost { get; protected set; }
     public GameSlot BackGhost { get; protected set; }
 
-    public override void Start()
+    protected override void Awake()
     {
-        if (initialized) return;
-        base.Start();
+        base.Awake();
         FrontGhost = AddGhost();
         BackGhost = AddGhost();
         UpdateGhosts();
@@ -19,7 +16,7 @@ public abstract class GameQueue : GameList
     public override void UpdateGhosts()
     {
         // Caso esta classe ainda não tenha sido inicializada
-        if (FrontGhost == null || BackGhost == null) return; 
+        if (FrontGhost == null || BackGhost == null) return;
 
         FrontGhost.enabled = Count > 0;
         if (Count <= 0)
@@ -35,6 +32,82 @@ public abstract class GameQueue : GameList
         }
 
         base.UpdateGhosts();
+
+    }
+    public enum Warning
+    {
+        Full,
+        Empty,
+        GrabNotFront,
+        ReleaseNotBack,
+        WrongGroup
+    }
+    protected virtual void ShowWarning(Warning w, GameSlot slot)
+    {
+        var message = w switch
+        {
+            Warning.Full => "A fila já está cheia",
+            Warning.Empty => "Não há o que retirar",
+            Warning.GrabNotFront => "É possível apenas pegar da frente",
+            Warning.ReleaseNotBack => "Não pode colocar algo fora do fim da fila",
+            Warning.WrongGroup => "Não pode colocar aqui",
+        };
+        base.ShowWarning(message, slot);
+    }
+    protected override bool OnInteract(GameSlot slot)
+    {
+        if (GrabManager.Grabbed)
+        {
+            if (ReferenceEquals(GrabManager.Grabbed.group, this))
+            {
+                ShowWarning(Warning.WrongGroup, slot);
+                return false;
+            }
+            if (BackGhost != slot)
+            {
+                ShowWarning(Warning.GrabNotFront, slot);
+                return false;
+            }
+            if (IsFull())
+            {
+                ShowWarning(Warning.Full, slot);
+                return false;
+            }
+
+            var item = GrabManager.Release();
+            Push(item.gameObject);
+
+            item.GetComponentInChildren<Collider>(true).enabled = true;
+            item.transform.localPosition = Vector3.zero;
+            item.transform.rotation = slot.transform.rotation;
+            //TODO: colocar animação lerp
+            //TODO: manter colisao desativada durante animação lerp
+        }
+        else
+        {
+            if (FrontSlot != slot)
+            {
+                ShowWarning(Warning.ReleaseNotBack, slot);
+                return false;
+            }
+            if (IsEmpty())
+            {
+                ShowWarning(Warning.Empty, slot);
+                return false;
+            }
+            var item = slot.Item;
+            Pop();
+
+            GrabManager.Grab(new GrabManager.GrabInfo(item)
+            {
+                group = grabGroup,
+                //TODO
+                //area = ...
+            });
+            item.GetComponentInChildren<Collider>(true).enabled = false;
+        }
+
+        return true;
     }
 
     public virtual bool Push(GameObject item, bool resetTransform = false)
@@ -51,7 +124,7 @@ public abstract class GameQueue : GameList
     {
         if (Count <= 0) return false;
         var slot = Slots[0];
-        slot.Remove();
+        slot.Extract();
         Slots.Remove(slot);
         Slots.Add(slot);
         Count--;

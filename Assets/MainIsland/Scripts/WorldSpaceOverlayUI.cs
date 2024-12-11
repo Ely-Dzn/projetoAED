@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using SpatialSys.UnitySDK;
 using System.Diagnostics.CodeAnalysis;
 
 public class WorldSpaceOverlayUI : MonoBehaviour

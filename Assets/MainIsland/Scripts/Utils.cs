@@ -1,14 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SpatialSys.UnitySDK;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 public static class Utils
 {
     public static bool IsInteractableInRange(SpatialInteractable interactable, Vector3 source)
     {
         return Vector3.Distance(source, interactable.transform.position) <= interactable.interactiveRadius;
+    }
+    public static bool IsInteractableInRange(SpatialInteractable interactable, IAvatar source)
+    {
+        return IsInteractableInRange(interactable, source.position);
+    }
+    public static bool IsInteractableInRange(SpatialInteractable interactable)
+    {
+        return IsInteractableInRange(interactable, SpatialBridge.actorService.localActor.avatar);
     }
 
     public static List<GameObject> GetChildren(Transform parent)

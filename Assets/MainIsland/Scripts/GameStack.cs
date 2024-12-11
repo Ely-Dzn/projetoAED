@@ -5,10 +5,9 @@ public class GameStack : GameList
 {
     public GameSlot TopGhost { get; protected set; }
 
-    public override void Start()
+    protected override void Awake()
     {
-        if (initialized) return;
-        base.Start();
+        base.Awake();
         TopGhost = AddGhost();
         UpdateGhosts();
     }
@@ -29,6 +28,90 @@ public class GameStack : GameList
 
         base.UpdateGhosts();
     }
+    public enum Warning
+    {
+        Full,
+        Empty,
+        GrabNotTop,
+        ReleaseNotTop,
+        WrongGroup
+    }
+    protected virtual void ShowWarning(Warning w, GameSlot slot)
+    {
+        var message = w switch
+        {
+            Warning.Full => "A pilha já está cheia",
+            Warning.Empty => "Não há o que retirar",
+            Warning.GrabNotTop => "É possível apenas pegar do topo",
+            Warning.ReleaseNotTop => "Não pode colocar algo fora do topo",
+            Warning.WrongGroup => "Não pode colocar aqui",
+        };
+        base.ShowWarning(message, slot);
+    }
+    protected override bool OnInteract(GameSlot slot)
+    {
+        if (GrabManager.Grabbed)
+        {
+            if (ReferenceEquals(GrabManager.Grabbed.group, this))
+            {
+                ShowWarning(Warning.WrongGroup, slot);
+                return false;
+            }
+            if (TopGhost != slot)
+            {
+                ShowWarning(Warning.ReleaseNotTop, slot);
+                return false;
+            }
+            if (IsFull())
+            {
+                ShowWarning(Warning.Full, slot);
+                return false;
+            }
+
+            var item = GrabManager.Release();
+            Push(item.gameObject);
+
+            item.GetComponentInChildren<Collider>(true).enabled = true;
+            item.transform.localPosition = Vector3.zero;
+            item.transform.rotation = slot.transform.rotation;
+            //TODO: colocar animação lerp
+            //TODO: manter colisao desativada durante animação lerp
+        }
+        else
+        {
+            if (TopSlot != slot)
+            {
+                ShowWarning(Warning.GrabNotTop, slot);
+                return false;
+            }
+            if (IsEmpty())
+            {
+                ShowWarning(Warning.Empty, slot);
+                return false;
+            }
+            var item = slot.Item;
+            Pop();
+
+            //TODO
+            //foreach (var s in Stacks)
+            //{
+            //    foreach (var ghostSlot in s.ghostSlots)
+            //    {
+            //        ghostSlot.transform.rotation = GetRandomRotation();
+            //    }
+            //}
+
+            GrabManager.Grab(new GrabManager.GrabInfo(item)
+            {
+                group = grabGroup,
+                //TODO
+                //area = ...
+            });
+            item.GetComponentInChildren<Collider>(true).enabled = false;
+        }
+
+        return true;
+    }
 
     public virtual bool Push(GameObject item, bool resetTransform = false)
     {
@@ -43,7 +126,7 @@ public class GameStack : GameList
     public virtual bool Pop()
     {
         if (Count <= 0) return false;
-        Slots[Count - 1].Remove();
+        Slots[Count - 1].Extract();
         Count--;
         UpdateGhosts();
         return true;

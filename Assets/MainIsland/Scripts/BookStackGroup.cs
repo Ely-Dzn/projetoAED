@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using SpatialSys.UnitySDK;
-using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -12,11 +9,13 @@ public class BookStackGroup : ListGroup<GameStack>
     public List<GameStack> Stacks => Lists;
     public List<Color> colors;
     private GameObject bookPrefab;
+    private Material transparentMaterial;
 
     new void Start()
     {
         base.Start();
 
+        transparentMaterial = AssetManager.Load<Material>("Materials/Transparent");
         bookPrefab = AssetManager.Load<GameObject>("Prefabs/Livro");
 
         for (int i = 0; i < Stacks[0].MaxSize; i++)
@@ -26,7 +25,12 @@ public class BookStackGroup : ListGroup<GameStack>
             book.transform.rotation = GetRandomRotation();
         }
 
-        // Ghost Book
+        foreach (var stack in Stacks)
+        {
+            stack.grabGroup = this;
+        }
+
+        // Livro fantasma do topo da pilha
         var ghostBook = InstantiateBook();
         foreach (var c in ghostBook.GetComponentsInChildren<Collider>())
             c.gameObject.layer = Layers.Ghost;
@@ -57,60 +61,11 @@ public class BookStackGroup : ListGroup<GameStack>
 
         return book;
     }
-    protected override GameObject InstantiateItem() => InstantiateBook();
 
-    protected override Quaternion GetGrabbedRotation()
-    {
-        var player = SpatialBridge.actorService.localActor.avatar;
-        return Utils.QuaternionFromEuler(player.rotation.eulerAngles + new Vector3(90, 90, 90));
-    }
+    //protected override Quaternion GetGrabbedRotation()
+    //{
+    //    var player = SpatialBridge.actorService.localActor.avatar;
+    //    return Utils.QuaternionFromEuler(player.rotation.eulerAngles + new Vector3(90, 90, 90));
+    //}
 
-    public override void Grab(GameSlot slot)
-    {
-        var stack = (BookStack)slot.Parent;
-
-        if (slot.index != stack.Count - 1)
-        {
-            stack.ShowWarning("Não pode pegar livro fora do topo", slot);
-            return;
-        }
-        var item = slot.Item;
-        if (!stack.Pop())
-        {
-            stack.ShowWarning("Não pode tirar livro de uma pilha vazia", slot);
-            return;
-        }
-
-        foreach (var s in Stacks)
-        {
-            foreach (var ghostSlot in s.ghostSlots)
-            {
-                ghostSlot.transform.rotation = GetRandomRotation();
-            }
-        }
-        Grabbed = item;
-        Grabbed.GetComponentInChildren<Collider>(true).enabled = false;
-    }
-    public override void Release(GameSlot slot)
-    {
-        var stack = (BookStack)slot.Parent;
-
-        if (slot.index != stack.Count)
-        {
-            stack.ShowWarning("Não pode colocar o livro fora do topo", slot);
-            return;
-        }
-        if (!stack.Push(Grabbed))
-        {
-            stack.ShowWarning("Não pode colocar livro numa pilha já cheia", slot);
-            return;
-        }
-
-        Grabbed.GetComponentInChildren<Collider>(true).enabled = true;
-        Grabbed.transform.localPosition = Vector3.zero;
-        Grabbed.transform.rotation = slot.transform.rotation;
-        Grabbed = null;
-        //TODO: colocar animação lerp
-        //TODO: manter colisao desativada durante animação lerp
-    }
 }
