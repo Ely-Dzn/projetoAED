@@ -16,6 +16,7 @@ Assets/Unity.VisualScripting.Generated*
 Assets/Spatial/Temp*
 Assets/Spatial/Generated*
 **/*.blend1
+Assets/MainIsland/Proprietary/
 
 # Visual Studio
 .vs
