@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEditor.Progress;
 
 [DisallowMultipleComponent]
 public class GameStack : GameList
@@ -70,10 +71,6 @@ public class GameStack : GameList
 
             var item = GrabManager.Release().transform;
             Push(item.gameObject);
-
-            item.GetComponentInChildren<Collider>(true).enabled = true;
-            item.localPosition = Vector3.zero;
-            item.rotation = slot.transform.rotation;
         }
         else
         {
@@ -108,7 +105,6 @@ public class GameStack : GameList
                     Push(GrabManager.Release().gameObject, resetTransform: true);
                 }
             });
-            item.GetComponentInChildren<Collider>(true).enabled = false;
         }
 
         return true;
@@ -122,14 +118,17 @@ public class GameStack : GameList
         Count++;
         slot.transform.localPosition = TopGhost.transform.localPosition;
         UpdateGhosts();
+        item.GetComponentInChildren<Collider>(true).enabled = true;
+        item.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         return true;
     }
     public virtual bool Pop()
     {
         if (Count <= 0) return false;
-        Slots[Count - 1].Extract();
+        var item = Slots[Count - 1].Extract();
         Count--;
         UpdateGhosts();
+        item.GetComponentInChildren<Collider>(true).enabled = false;
         return true;
     }
     public virtual GameObject Top

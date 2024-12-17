@@ -71,10 +71,7 @@ public abstract class GameList : MonoBehaviour
             //UpdateSlotPosition(slot);
         }
 
-        if (PlayerCanRelease())
-        {
-            UpdateGhosts();
-        }
+        UpdateGhosts();
 
         slotOffset = slotsContainer.transform.GetChild(0).localPosition;
         foreach (var slot in Slots)
@@ -109,13 +106,7 @@ public abstract class GameList : MonoBehaviour
     protected virtual bool PlayerCanRelease()
     {
         var grabbed = GrabManager.Grabbed;
-        if (grabbed)
-        {
-            if (!ReferenceEquals(grabbed.group, grabGroup))
-                return false;
-            return true;
-        }
-        return false;
+        return grabbed && ReferenceEquals(grabbed.group, grabGroup);
     }
 
     protected virtual bool OnInteract(GameSlot slot)
