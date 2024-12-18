@@ -115,7 +115,7 @@ public abstract class GameQueue : GameList
     {
         if (Count >= MaxSize) return false;
         GameSlot slot = Slots[Count];
-        slot.Insert(item, resetTransform);
+        slot.Insert(item, resetTransform: resetTransform);
         Count++;
         slot.transform.localPosition = BackGhost.transform.localPosition;
         UpdateGhosts();

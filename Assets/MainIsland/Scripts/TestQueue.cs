@@ -5,7 +5,6 @@ public class TestQueue : GameList
     public TestQueueGroup group;
     public GameSlot BackGhost { get; protected set; }
 
-
     protected override void Awake()
     {
         base.Awake();
@@ -78,17 +77,17 @@ public class TestQueue : GameList
             slot.interactable.interactText = PlayerCanRelease() ? "push" : "pop";
     }
 
-    public virtual bool Push(GameObject item, bool resetTransform = false)
+    public bool Push(GameObject item, bool resetTransform = false)
     {
         if (Count >= MaxSize) return false;
         GameSlot slot = Slots[Count];
-        slot.Insert(item, resetTransform);
+        slot.Insert(item, resetTransform: resetTransform);
         Count++;
         slot.transform.localPosition = BackGhost.transform.localPosition;
         UpdateGhosts();
         return true;
     }
-    public virtual bool Remove(GameSlot slot)
+    public bool Remove(GameSlot slot)
     {
         if (Count <= 0) return false;
         slot.Extract();
@@ -103,8 +102,19 @@ public class TestQueue : GameList
         UpdateGhosts();
         return true;
     }
+    public void Clear()
+    {
+        foreach (var slot in Slots)
+        {
+            if (slot.IsFilled)
+            {
+                Destroy(slot.Extract().transform.gameObject);
+            }
+        }
+        UpdateGhosts();
+    }
 
-    public virtual GameObject Front
+    public GameObject Front
     {
         get
         {

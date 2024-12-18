@@ -114,7 +114,7 @@ public class GameStack : GameList
     {
         if (Count >= MaxSize) return false;
         GameSlot slot = Slots[Count];
-        slot.Insert(item, resetTransform);
+        slot.Insert(item, resetTransform: resetTransform);
         Count++;
         slot.transform.localPosition = TopGhost.transform.localPosition;
         UpdateGhosts();
