@@ -33,7 +33,7 @@ public abstract class ListGroup<L> : MonoBehaviour where L : GameList
 
         foreach (var list in Lists)
         {
-            list.OnInteractEvent += OnInteractEvent;
+            list.OnInteractEvent += (slot, list) => OnInteractEvent?.Invoke(slot, list);
             list.grabGroup = this;
             list.grabArea = grabArea;
         }

@@ -18,10 +18,7 @@ public class BookQuests : MonoBehaviour
     [SerializeField]
     private GameObject colorsDisplay;
     private int[] task1Order = { 3, 1, 2, 4, 0 };
-    [SerializeField]
-    private TMP_Text timerText;
-    private List<float> times = new();
-    private Boolean playing = false;
+    private bool playing = false;
 
     IEnumerator Start()
     {
@@ -33,7 +30,6 @@ public class BookQuests : MonoBehaviour
 
         stacks.OnInteractEvent += (slot, list) =>
         {
-            if (currentTask == null) return;
             playing = true;
         };
 
@@ -77,25 +73,6 @@ public class BookQuests : MonoBehaviour
                 break;
         }
 
-        // Atualização do timer
-        if (playing)
-        {
-            StringBuilder ss = new();
-            for (int i = 0; i < times.Count; i++)
-            {
-                var a = times[i];
-                var b = i + 1 >= times.Count ? Time.time : times[i + 1];
-                var span = (int)(b - a);
-                var seconds = span % 60;
-                var minutes = span / 60;
-                string timeText = string.Format("{0:D2}:{1:D2}", minutes, seconds);
-                ss.Append(timeText);
-                ss.Append("\n");
-            }
-
-            timerText.text = ss.ToString();
-        }
-
         if (currentTask != null)
         {
             DebugUtils.Log(currentTask.name
@@ -115,10 +92,12 @@ public class BookQuests : MonoBehaviour
         currentTask.Complete();
         Debug.Log("Quest complete");
         currentTaskIdx++;
+        GameTimer.Instance.Step();
         if (currentTaskIdx >= quest.quest.tasks.Count)
         {
             currentTask = null;
             playing = false;
+            GameTimer.Instance.Stop();
             return;
         }
         currentTask = quest.quest.tasks[currentTaskIdx];
@@ -127,8 +106,11 @@ public class BookQuests : MonoBehaviour
     void Task1Init()
     {
         colorsDisplay.SetActive(false);
-        times.Clear();
-        times.Add(Time.time);
+        GameTimer.Instance.Begin();
+        foreach (var x in quest.quest.tasks)
+        {
+            GameTimer.Instance.labels.Add(x.name);
+        }
         playing = true;
     }
     void Task1()
@@ -150,7 +132,6 @@ public class BookQuests : MonoBehaviour
             var el = colorsDisplay.transform.GetChild(i).GetComponent<RawImage>();
             el.color = stacks.colors[task1Order[i]];
         }
-        times.Add(Time.time);
     }
     void Task2()
     {

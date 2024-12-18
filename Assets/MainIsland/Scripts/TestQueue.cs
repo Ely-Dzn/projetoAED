@@ -68,6 +68,16 @@ public class TestQueue : GameList
         return true;
     }
 
+    protected override bool PlayerCanRelease()
+    {
+        return group != null ? group.Grabbed : null != null;
+    }
+    protected override void UpdateInteractText(GameSlot slot)
+    {
+        if (slot.interactable != null)
+            slot.interactable.interactText = PlayerCanRelease() ? "push" : "pop";
+    }
+
     public virtual bool Push(GameObject item, bool resetTransform = false)
     {
         if (Count >= MaxSize) return false;
