@@ -12,8 +12,8 @@
     public const int UIMask = 1 << UI;
 
     // Custom layers
-    public const int RaycastIgnore = 6;
-    public const int RaycastIgnoreMask = 1 << RaycastIgnore;
+    public const int CustomLayer1 = 6;
+    public const int CustomLayer1Mask = 1 << CustomLayer1;
     public const int CustomLayer2 = 7;
     public const int CustomLayer2Mask = 1 << CustomLayer2;
     public const int CustomLayer3 = 8;

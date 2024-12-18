@@ -14,7 +14,8 @@ public abstract class GameList : MonoBehaviour
     public int MaxSize { get; protected set; }
     [field: SerializeField, ReadOnly]
     public int Count { get; protected set; } = 0;
-    public GameSlot targetSlot = null;
+    [field: SerializeField, ReadOnly]
+    public GameSlot targetSlot { get; protected set; } = null;
     public delegate void InteractHandler(GameSlot slot, GameList list);
     public event InteractHandler OnInteractEvent;
     public List<GameSlot> ghostSlots = new();

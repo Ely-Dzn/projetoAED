@@ -31,7 +31,7 @@ public class Raycast : MonoBehaviour
 
         if (Physics.Raycast(
             ray, out RaycastHit hit, 10,
-            ~(Layers.AvatarLocalMask | Layers.AvatarRemoteMask | Layers.RaycastIgnoreMask),
+            ~(Layers.AvatarLocalMask | Layers.AvatarRemoteMask | Layers.IgnoreRaycastMask),
             QueryTriggerInteraction.Ignore))
         {
             Hit = hit;
