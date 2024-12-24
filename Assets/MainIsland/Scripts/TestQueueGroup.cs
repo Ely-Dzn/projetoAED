@@ -29,6 +29,9 @@ public class TestQueueGroup : MonoBehaviour
     private SpatialInteractable bowlInteractable;
     private Outline bowlOutline;
     private List<Transform> bowlItems = new();
+    public Vector3 queueStartPos;
+    public Transform hole;
+    private Vector3 queueDirection;
     private GameObject grabbed = null;
     public GameObject Grabbed
     {
@@ -58,6 +61,7 @@ public class TestQueueGroup : MonoBehaviour
     private int collected = 0;
     private int moves = 0;
     private int round = 0;
+    private float speed = 0;
 
     void Start()
     {
@@ -90,6 +94,10 @@ public class TestQueueGroup : MonoBehaviour
         colorDisplay.enabled = false;
 
         grabArea.onExitEvent += StopPlaying;
+
+        queueStartPos = queue.transform.position;
+
+        queueDirection = (hole.position - queueStartPos).normalized;
     }
 
     private void Update()
@@ -111,6 +119,20 @@ public class TestQueueGroup : MonoBehaviour
         }
 
         if (!playing) return;
+
+        queue.transform.position += speed * Time.deltaTime * queueDirection;
+        // Caso esteja no buraco
+        if (Vector3.Dot(queue.transform.position - hole.position, queueDirection) > 0)
+        {
+            var item = queue.Front;
+            queue.Remove(queue.FrontSlot);
+            Destroy(item);
+            queue.transform.position -= queueDirection * 0.5f;
+            if (queue.Count == 0)
+            {
+                AdvanceRound();
+            }
+        }
 
         if (Raycast.HasHit)
         {
@@ -143,6 +165,11 @@ public class TestQueueGroup : MonoBehaviour
             collected++;
             NextColor = GetNextColor();
         }
+        else
+        {
+            speed += 0.02f;
+        }
+        queue.transform.position -= queueDirection * 0.25f;
         Debug.Log($"Coletados: {collected}, Movimentações: {moves}");
         Grabbed = null;
         bowlItems.Add(item.transform);
@@ -153,7 +180,7 @@ public class TestQueueGroup : MonoBehaviour
 
         if (queue.Count == 0)
         {
-            AvanceRound();
+            AdvanceRound();
         }
     }
 
@@ -167,7 +194,7 @@ public class TestQueueGroup : MonoBehaviour
         moves = 0;
         collected = 0;
         round = 0;
-        AvanceRound();
+        AdvanceRound();
     }
     private void StopPlaying()
     {
@@ -188,14 +215,16 @@ public class TestQueueGroup : MonoBehaviour
         bowlItems.Clear();
     }
 
-    private void AvanceRound()
+    private void AdvanceRound()
     {
-        round++;
-        if (round > 4)
+        if (round >= 4)
         {
             StopPlaying();
             return;
         }
+        round++;
+        speed = 0.1f + 0.1f * round;
+        queue.transform.localPosition = Vector3.zero;
         var n = queue.MaxSize * round / 4;
         for (int i = 0; i < n; i++)
         {
