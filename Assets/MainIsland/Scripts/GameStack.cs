@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UnityEditor.Progress;
 
 [DisallowMultipleComponent]
 public class GameStack : GameList

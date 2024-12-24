@@ -129,7 +129,7 @@ public abstract class GameList : MonoBehaviour
         slot.transform.localPosition = Vector3.Lerp(
             slot.transform.localPosition,
             target,
-            Time.deltaTime);
+            Time.deltaTime * 7f);
     }
     public virtual void ResetSlotPosition(GameSlot slot)
     {
@@ -213,7 +213,7 @@ public abstract class GameList : MonoBehaviour
         foreach (var slot in ghostSlots)
         {
             bool canRelease = PlayerCanRelease();
-            slot.gameObject.SetActive(canRelease);
+            slot.gameObject.SetActive(slot.enabled && canRelease);
             if (canRelease)
             {
                 UpdateSlot(slot);

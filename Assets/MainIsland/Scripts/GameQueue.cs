@@ -19,6 +19,7 @@ public abstract class GameQueue : GameList
         if (FrontGhost == null || BackGhost == null) return;
 
         FrontGhost.enabled = Count > 0;
+
         if (Count <= 0)
         {
             BackGhost.index = 0;
@@ -32,7 +33,6 @@ public abstract class GameQueue : GameList
         }
 
         base.UpdateGhosts();
-
     }
     public enum Warning
     {
