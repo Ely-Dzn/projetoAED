@@ -1036,7 +1036,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &297071156
 GameObject:
@@ -1131,6 +1131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 300738793}
   - component: {fileID: 300738794}
+  - component: {fileID: 300738795}
   m_Layer: 0
   m_Name: Queue Group
   m_TagString: Untagged
@@ -1174,6 +1175,104 @@ MonoBehaviour:
   - {r: 0.15659486, g: 0.18194553, b: 0.6509434, a: 1}
   - {r: 0.754717, g: 0.61120516, b: 0.08899963, a: 1}
   - {r: 0.4965571, g: 0.06679422, b: 0.745283, a: 1}
+--- !u!114 &300738795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300738792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 843f1df22955d4c8193e21ccb10c9077, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 2
+  version: 2
+  questName: Fila
+  description: Quest de Fila
+  startAutomatically: 0
+  saveUserProgress: 0
+  tasksAreOrdered: 1
+  celebrateOnComplete: 1
+  hideToastMessageOnComplete: 0
+  questRewards: []
+  tasks:
+  - id: 1
+    name: Task 1
+    type: 0
+    progressSteps: 0
+    taskMarkers: []
+    onStartedEvent:
+      id: 0
+      unityEventIsSynced: 0
+      unityEvent:
+        m_PersistentCalls:
+          m_Calls: []
+      animatorEvent:
+        events: []
+      questEvent:
+        events: []
+    onCompletedEvent:
+      id: 0
+      unityEventIsSynced: 0
+      unityEvent:
+        m_PersistentCalls:
+          m_Calls: []
+      animatorEvent:
+        events: []
+      questEvent:
+        events: []
+    onPreviouslyCompleted:
+      id: 0
+      unityEventIsSynced: 0
+      unityEvent:
+        m_PersistentCalls:
+          m_Calls: []
+      animatorEvent:
+        events: []
+      questEvent:
+        events: []
+  onStartedEvent:
+    id: 0
+    unityEventIsSynced: 0
+    unityEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    animatorEvent:
+      events: []
+    questEvent:
+      events: []
+  onCompletedEvent:
+    id: 0
+    unityEventIsSynced: 0
+    unityEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    animatorEvent:
+      events: []
+    questEvent:
+      events: []
+  onPreviouslyCompleted:
+    id: 0
+    unityEventIsSynced: 0
+    unityEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    animatorEvent:
+      events: []
+    questEvent:
+      events: []
+  onResetEvent:
+    id: 0
+    unityEventIsSynced: 0
+    unityEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    animatorEvent:
+      events: []
+    questEvent:
+      events: []
 --- !u!1 &305555854
 GameObject:
   m_ObjectHideFlags: 0
@@ -1226,7 +1325,7 @@ MonoBehaviour:
   slotsContainer: {fileID: 663615843}
   slotPrefab: {fileID: 7317856894609731336, guid: 575800671d6d5a1408926a2ed7b4c330,
     type: 3}
-  <MaxSize>k__BackingField: 5
+  <MaxSize>k__BackingField: 8
   <Count>k__BackingField: 0
   <targetSlot>k__BackingField: {fileID: 0}
   ghostSlots: []
@@ -1847,7 +1946,7 @@ MonoBehaviour:
   version: 2
   questName: Pilha
   description: Aprender pilha
-  startAutomatically: 1
+  startAutomatically: 0
   saveUserProgress: 0
   tasksAreOrdered: 1
   celebrateOnComplete: 1
@@ -2711,7 +2810,7 @@ PrefabInstance:
     - target: {fileID: 2430675736995512553, guid: 8c37e7c8e9921f246b9ff4cc7bbb6795,
         type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 2430675736995512553, guid: 8c37e7c8e9921f246b9ff4cc7bbb6795,
         type: 3}
@@ -6337,7 +6436,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   messagePrefab: {fileID: 0}
-  canvas: {fileID: 0}
+  messageObject: {fileID: 0}
   tmptext: {fileID: 0}
   target: {fileID: 0}
 --- !u!4 &1155444679
@@ -9254,7 +9353,7 @@ MonoBehaviour:
   slotsContainer: {fileID: 797054542}
   slotPrefab: {fileID: 7317856894609731336, guid: 575800671d6d5a1408926a2ed7b4c330,
     type: 3}
-  <MaxSize>k__BackingField: 5
+  <MaxSize>k__BackingField: 8
   <Count>k__BackingField: 0
   <targetSlot>k__BackingField: {fileID: 0}
   ghostSlots: []
@@ -9459,7 +9558,7 @@ MonoBehaviour:
   slotsContainer: {fileID: 1179030726}
   slotPrefab: {fileID: 7317856894609731336, guid: 575800671d6d5a1408926a2ed7b4c330,
     type: 3}
-  <MaxSize>k__BackingField: 5
+  <MaxSize>k__BackingField: 8
   <Count>k__BackingField: 0
   <targetSlot>k__BackingField: {fileID: 0}
   ghostSlots: []

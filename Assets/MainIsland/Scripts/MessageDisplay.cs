@@ -10,7 +10,7 @@ public class MessageDisplay : MonoBehaviour
     [SerializeField]
     private GameObject messagePrefab;
     [SerializeField]
-    private GameObject canvas;
+    private GameObject messageObject;
     [SerializeField]
     private TMP_Text tmptext;
     [SerializeField]
@@ -22,10 +22,11 @@ public class MessageDisplay : MonoBehaviour
 
         messagePrefab = AssetManager.Load<GameObject>("Prefabs/Warning");
 
-        canvas = Instantiate(messagePrefab);
-        tmptext = canvas.GetComponentInChildren<TextMeshProUGUI>();
+        messageObject = Instantiate(messagePrefab);
+        messageObject.transform.SetParent(transform);
+        tmptext = messageObject.GetComponentInChildren<TextMeshProUGUI>();
 
-        canvas.SetActive(false);
+        messageObject.SetActive(false);
     }
 
     public void ShowWarning(string text, Transform target)
@@ -37,10 +38,10 @@ public class MessageDisplay : MonoBehaviour
         var dir = player.position - target.position;
         dir.y = 0;
         dir.Normalize();
-        canvas.transform.SetPositionAndRotation(
+        messageObject.transform.SetPositionAndRotation(
             target.position + dir,
             Quaternion.LookRotation(-dir));
-        canvas.SetActive(true);
+        messageObject.SetActive(true);
         Invoke(nameof(ClearMessage), 2f);
     }
     private void ClearMessage()
@@ -48,7 +49,7 @@ public class MessageDisplay : MonoBehaviour
         CancelInvoke(nameof(ClearMessage));
         if (target != null)
         {
-            canvas.SetActive(false);
+            messageObject.SetActive(false);
             target = null;
         }
     }

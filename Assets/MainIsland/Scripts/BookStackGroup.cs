@@ -18,10 +18,23 @@ public class BookStackGroup : ListGroup<GameStack>
         transparentMaterial = AssetManager.Load<Material>("Materials/Transparent");
         bookPrefab = AssetManager.Load<GameObject>("Prefabs/Livro");
 
-        for (int i = 0; i < Stacks[0].MaxSize; i++)
+        int colorIndex = 0;
+        for (int i = 0; i < 5; i++)
         {
-            var book = InstantiateBook(colors[i % colors.Count]);
+            var book = InstantiateBook(colors[(colorIndex++) % colors.Count]);
             Stacks[0].Push(book, resetTransform: true);
+            book.transform.rotation = GetRandomRotation();
+        }
+        for (int i = 0; i < 2; i++)
+        {
+            var book = InstantiateBook(colors[(colorIndex++) % colors.Count]);
+            Stacks[1].Push(book, resetTransform: true);
+            book.transform.rotation = GetRandomRotation();
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            var book = InstantiateBook(colors[(colorIndex++) % colors.Count]);
+            Stacks[2].Push(book, resetTransform: true);
             book.transform.rotation = GetRandomRotation();
         }
 
