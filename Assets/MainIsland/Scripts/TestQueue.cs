@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 
-public class TestQueue : GameList
+using SlotType = GameSlot<BallGameItem>;
+
+public class TestQueue : GameList<BallGameItem>
 {
     public TestQueueGroup group;
-    public GameSlot BackGhost { get; protected set; }
+    public SlotType BackGhost { get; protected set; }
 
     protected override void Awake()
     {
@@ -30,7 +32,7 @@ public class TestQueue : GameList
         base.UpdateGhosts();
 
     }
-    protected override bool OnInteract(GameSlot slot)
+    protected override bool OnInteract(SlotType slot)
     {
         if (group.Grabbed)
         {
@@ -55,7 +57,7 @@ public class TestQueue : GameList
             {
                 return false;
             }
-            var item = (BallGameItem)slot.Item;
+            var item = slot.Item;
             Remove(slot);
 
             group.Grabbed = item;
@@ -70,23 +72,23 @@ public class TestQueue : GameList
     {
         return group != null ? group.Grabbed : null != null;
     }
-    protected override void UpdateInteractText(GameSlot slot)
+    protected override void UpdateInteractText(SlotType slot)
     {
         if (slot.interactable != null)
             slot.interactable.interactText = PlayerCanRelease() ? "push" : "pop";
     }
 
-    public bool Push(GameItem item, bool resetTransform = false)
+    public bool Push(BallGameItem item, bool resetTransform = false)
     {
         if (Count >= MaxSize) return false;
-        GameSlot slot = Slots[Count];
+        SlotType slot = Slots[Count];
         slot.Insert(item, resetTransform: resetTransform);
         Count++;
         slot.transform.localPosition = BackGhost.transform.localPosition;
         UpdateGhosts();
         return true;
     }
-    public bool Remove(GameSlot slot)
+    public bool Remove(SlotType slot)
     {
         if (Count <= 0) return false;
         slot.Extract();
@@ -121,7 +123,7 @@ public class TestQueue : GameList
             return Slots[0].Item;
         }
     }
-    public virtual GameSlot FrontSlot
+    public virtual GameSlot<BallGameItem> FrontSlot
     {
         get
         {
@@ -137,7 +139,7 @@ public class TestQueue : GameList
             return Slots[Count - 1].Item;
         }
     }
-    public virtual GameSlot BackSlot
+    public virtual SlotType BackSlot
     {
         get
         {

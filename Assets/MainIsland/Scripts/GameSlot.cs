@@ -1,52 +1,94 @@
-﻿using SpatialSys.UnitySDK;
+﻿using System;
+using SpatialSys.UnitySDK;
 using UnityEngine;
 
 public class GameSlot : MonoBehaviour
 {
-    public GameList Parent;
-    public int index;
-    [field: SerializeField]
-    public GameItem Item { get; protected set; }
-    public GameObject GameObject => Item.GameObject;
-    public Transform Transform => Item.GameObject.transform;
-    public bool IsFilled => GameObject != null;
-    public SpatialInteractable interactable;
-    public Outline outline;
-    public delegate void InteractHandler(GameSlot slot);
-    public event InteractHandler OnInteractEvent;
-
-    void Start()
+    [SerializeField]
+    private SpatialInteractable interactable;
+    [SerializeField]
+    private Outline outline;
+    private object slot;
+    public GameSlot<T> Get<T>() where T : GameItem
     {
-        if (interactable == null)
-            interactable = GetComponentInChildren<SpatialInteractable>(true);
-        if (interactable != null)
-            interactable.onInteractEvent += SendOnInteract;
-        outline = GetComponentInChildren<Outline>(true);
+        try
+        {
+            return (GameSlot<T>)slot;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
+    public S Make<S, T>(S slot)
+        where T : GameItem
+        where S : GameSlot<T>
+    {
+        this.slot = slot;
+
+        if (interactable != null)
+            slot.interactable = interactable;
+        else
+            slot.interactable = GetComponentInChildren<SpatialInteractable>(true);
+        if (slot.interactable != null)
+        {
+            slot.interactable.onInteractEvent += slot.SendOnInteract;
+            _OnDestroy += () =>
+            {
+                slot.interactable.onInteractEvent -= slot.SendOnInteract;
+            };
+        }
+
+        if (outline != null)
+            slot.outline = outline;
+        else
+            slot.outline = GetComponentInChildren<Outline>(true);
+
+        return slot;
+    }
+    Action _OnDestroy;
     void OnDestroy()
     {
-        if (interactable != null)
-            interactable.onInteractEvent -= SendOnInteract;
+        _OnDestroy?.Invoke();
+    }
+}
+
+public class GameSlot<T> where T : GameItem
+{
+    public int index = 0;
+    public bool enabled = true;
+    private readonly GameSlot component;
+    [field: SerializeField]
+    public T Item { get; protected set; }
+    public GameObject ItemGameObject => Item.GameObject;
+    public Transform ItemTransform => Item.Transform;
+    public GameObject gameObject => component.gameObject;
+    public Transform transform => component.transform;
+    public bool IsFilled => ItemGameObject != null;
+    public SpatialInteractable interactable = null;
+    public Outline outline = null;
+    public delegate void InteractHandler(GameSlot<T> slot);
+    public event InteractHandler OnInteractEvent;
+
+    public GameSlot(GameSlot component)
+    {
+        this.component = component;
     }
 
-    void SendOnInteract()
+    public void SendOnInteract()
     {
         OnInteractEvent?.Invoke(this);
     }
 
-    public void Insert(GameItem item, bool resetTransform = false)
+    public void Insert(T item, bool resetTransform = false)
     {
         Item = item;
         if (resetTransform)
             item.Transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         item.Transform.SetParent(transform, !resetTransform);
         if (outline == null)
-            outline = GetComponentInChildren<Outline>(true);
-    }
-    public void Insert(GameObject go, bool resetTransform = false)
-    {
-        Insert(new GameItem(go), resetTransform: resetTransform);
+            outline = transform.GetComponentInChildren<Outline>(true);
     }
 
     public GameItem Extract()
@@ -56,10 +98,5 @@ public class GameSlot : MonoBehaviour
         if (outline != null && outline.gameObject != gameObject)
             outline = null;
         return oldItem;
-    }
-
-    void Reset()
-    {
-        Parent = GetComponentInParent<GameStack>();
     }
 }

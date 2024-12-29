@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public abstract class GameQueue : GameList
+public abstract class GameQueue<T> : GameList<T> where T : GameItem
 {
-    public GameSlot FrontGhost { get; protected set; }
-    public GameSlot BackGhost { get; protected set; }
+    public GameSlot<T> FrontGhost { get; protected set; }
+    public GameSlot<T> BackGhost { get; protected set; }
 
     protected override void Awake()
     {
@@ -42,7 +42,7 @@ public abstract class GameQueue : GameList
         ReleaseNotBack,
         WrongGroup
     }
-    protected virtual void ShowWarning(Warning w, GameSlot slot)
+    protected virtual void ShowWarning(Warning w, GameSlot<T> slot)
     {
         var message = w switch
         {
@@ -54,11 +54,12 @@ public abstract class GameQueue : GameList
         };
         base.ShowWarning(message, slot);
     }
-    protected override bool OnInteract(GameSlot slot)
+    protected override bool OnInteract(GameSlot<T> slot)
     {
         if (GrabManager.Grabbed)
         {
-            if (!ReferenceEquals(GrabManager.Grabbed.group, grabGroup))
+            if (!ReferenceEquals(GrabManager.Grabbed.group, grabGroup)
+                || GrabManager.Grabbed.item is not T)
             {
                 ShowWarning(Warning.WrongGroup, slot);
                 return false;
@@ -74,7 +75,7 @@ public abstract class GameQueue : GameList
                 return false;
             }
 
-            var item = GrabManager.Release().item;
+            var item = (T)GrabManager.Release().item;
             Push(item);
 
             item.Transform.GetComponentInChildren<Collider>(true).enabled = true;
@@ -102,7 +103,8 @@ public abstract class GameQueue : GameList
                 area = grabArea,
                 areaExitHandler = () =>
                 {
-                    Push(GrabManager.Release().item, resetTransform: true);
+                    GrabManager.Release();
+                    Push(item, resetTransform: true);
                 }
             });
             item.Transform.GetComponentInChildren<Collider>(true).enabled = false;
@@ -111,10 +113,10 @@ public abstract class GameQueue : GameList
         return true;
     }
 
-    public virtual bool Push(GameItem item, bool resetTransform = false)
+    public virtual bool Push(T item, bool resetTransform = false)
     {
         if (Count >= MaxSize) return false;
-        GameSlot slot = Slots[Count];
+        GameSlot<T> slot = Slots[Count];
         slot.Insert(item, resetTransform: resetTransform);
         Count++;
         slot.transform.localPosition = BackGhost.transform.localPosition;
@@ -143,10 +145,10 @@ public abstract class GameQueue : GameList
         get
         {
             if (Count <= 0) return null;
-            return Slots[0].GameObject;
+            return Slots[0].ItemGameObject;
         }
     }
-    public virtual GameSlot FrontSlot
+    public virtual GameSlot<T> FrontSlot
     {
         get
         {
@@ -159,10 +161,10 @@ public abstract class GameQueue : GameList
         get
         {
             if (Count <= 0) return null;
-            return Slots[Count - 1].GameObject;
+            return Slots[Count - 1].ItemGameObject;
         }
     }
-    public virtual GameSlot BackSlot
+    public virtual GameSlot<T> BackSlot
     {
         get
         {

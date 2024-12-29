@@ -1,14 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SpatialSys.UnitySDK;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public abstract class ListGroup<L> : MonoBehaviour where L : GameList
+public abstract class ListGroup<L, T> : MonoBehaviour
+    where T : GameItem
+    where L : GameList<T>
 {
     [SerializeField]
     protected GameObject container;
     public List<L> Lists { get; protected set; }
-    public event GameList.InteractHandler OnInteractEvent;
+    public Action OnInteractEvent;
     [SerializeField]
     private SpatialTriggerEvent grabArea;
     public SpatialTriggerEvent GrabArea
@@ -33,7 +36,7 @@ public abstract class ListGroup<L> : MonoBehaviour where L : GameList
 
         foreach (var list in Lists)
         {
-            list.OnInteractEvent += (slot, list) => OnInteractEvent?.Invoke(slot, list);
+            list.OnInteractEvent += (slot, list) => OnInteractEvent?.Invoke();
             list.grabGroup = this;
             list.grabArea = grabArea;
         }

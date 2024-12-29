@@ -1,9 +1,9 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class GameStack : GameList
+public class GameStack<T> : GameList<T> where T : GameItem
 {
-    public GameSlot TopGhost { get; protected set; }
+    public GameSlot<T> TopGhost { get; protected set; }
 
     protected override void Awake()
     {
@@ -36,7 +36,7 @@ public class GameStack : GameList
         ReleaseNotTop,
         WrongGroup
     }
-    protected virtual void ShowWarning(Warning w, GameSlot slot)
+    protected virtual void ShowWarning(Warning w, GameSlot<T> slot)
     {
         var message = w switch
         {
@@ -48,11 +48,12 @@ public class GameStack : GameList
         };
         base.ShowWarning(message, slot);
     }
-    protected override bool OnInteract(GameSlot slot)
+    protected override bool OnInteract(GameSlot<T> slot)
     {
         if (GrabManager.Grabbed)
         {
-            if (!ReferenceEquals(GrabManager.Grabbed.group, grabGroup))
+            if (!ReferenceEquals(GrabManager.Grabbed.group, grabGroup)
+                || GrabManager.Grabbed.item is not T)
             {
                 ShowWarning(Warning.WrongGroup, slot);
                 return false;
@@ -68,7 +69,7 @@ public class GameStack : GameList
                 return false;
             }
 
-            var item = GrabManager.Release().item;
+            var item = (T)GrabManager.Release().item;
             Push(item);
         }
         else
@@ -101,7 +102,8 @@ public class GameStack : GameList
                 area = grabArea,
                 areaExitHandler = () =>
                 {
-                    Push(GrabManager.Release().item, resetTransform: true);
+                    GrabManager.Release();
+                    Push(item, resetTransform: true);
                 }
             });
         }
@@ -109,10 +111,10 @@ public class GameStack : GameList
         return true;
     }
 
-    public virtual bool Push(GameItem item, bool resetTransform = false)
+    public virtual bool Push(T item, bool resetTransform = false)
     {
         if (Count >= MaxSize) return false;
-        GameSlot slot = Slots[Count];
+        GameSlot<T> slot = Slots[Count];
         slot.Insert(item, resetTransform: resetTransform);
         Count++;
         slot.transform.localPosition = TopGhost.transform.localPosition;
@@ -135,10 +137,10 @@ public class GameStack : GameList
         get
         {
             if (Count <= 0) return null;
-            return Slots[Count - 1].GameObject;
+            return Slots[Count - 1].ItemGameObject;
         }
     }
-    public virtual GameSlot TopSlot
+    public virtual GameSlot<T> TopSlot
     {
         get
         {

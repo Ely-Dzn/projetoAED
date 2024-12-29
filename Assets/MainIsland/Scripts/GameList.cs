@@ -1,25 +1,26 @@
 ﻿using System.Collections.Generic;
 using SpatialSys.UnitySDK;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public abstract class GameList : MonoBehaviour
+public abstract class GameList<T> : MonoBehaviour where T : GameItem
 {
     [SerializeField]
     protected GameObject slotsContainer;
     public GameObject slotPrefab;
     protected Vector3 slotOffset;
-    public List<GameSlot> Slots { get; protected set; }
+    public List<GameSlot<T>> Slots { get; protected set; }
     [field: SerializeField]
     public int MaxSize { get; protected set; }
     [field: SerializeField, ReadOnly]
     public int Count { get; protected set; } = 0;
     [field: SerializeField, ReadOnly]
-    public GameSlot targetSlot { get; protected set; } = null;
-    public delegate void InteractHandler(GameSlot slot, GameList list);
+    public GameSlot<T> targetSlot { get; protected set; } = null;
+    public delegate void InteractHandler(GameSlot<T> slot, GameList<T> list);
     public event InteractHandler OnInteractEvent;
-    public List<GameSlot> ghostSlots = new();
-    protected GameSlot warnedSlot = null;
+    protected List<GameSlot<T>> ghostSlots = new();
+    protected GameSlot<T> warnedSlot = null;
     public Object grabGroup;
     public SpatialTriggerEvent grabArea = null;
 
@@ -39,7 +40,7 @@ public abstract class GameList : MonoBehaviour
         }
         else
         {
-            Slots = Utils.GetChildren<GameSlot>(slotsContainer.transform);
+            Slots = Utils.GetChildren<GameSlot<T>>(slotsContainer.transform);
             if (Slots.Count == 0)
             {
                 throw new System.Exception("Prefab de slot não definido mas não há slots preexistentes");
@@ -54,7 +55,6 @@ public abstract class GameList : MonoBehaviour
         for (int i = 0; i < Slots.Count; i++)
         {
             var slot = Slots[i];
-            slot.Parent = this;
             if (slot.interactable != null)
                 slot.interactable.enabled = false;
             if (slot.outline != null)
@@ -80,9 +80,9 @@ public abstract class GameList : MonoBehaviour
             UpdateSlotPosition(slot);
         }
     }
-    protected virtual GameSlot GetTargetSlot()
+    protected virtual GameSlot<T> GetTargetSlot()
     {
-        GameSlot slot = null;
+        GameSlot<T> slot = null;
         if (Raycast.HasHit && Raycast.Hit.transform)
         {
             slot = FindSlot(Raycast.Hit.transform.gameObject);
@@ -93,7 +93,7 @@ public abstract class GameList : MonoBehaviour
         }
         return slot;
     }
-    protected virtual void UpdateSlot(GameSlot slot)
+    protected virtual void UpdateSlot(GameSlot<T> slot)
     {
         if (slot == null) return;
         var isTarget = slot == targetSlot;
@@ -110,19 +110,19 @@ public abstract class GameList : MonoBehaviour
         return grabbed && ReferenceEquals(grabbed.group, grabGroup);
     }
 
-    protected virtual bool OnInteract(GameSlot slot)
+    protected virtual bool OnInteract(GameSlot<T> slot)
     {
         if (slot == null) return false;
         if (GrabManager.Grabbed && !PlayerCanRelease()) return false;
         return true;
     }
-    protected void _OnInteract(GameSlot slot)
+    protected void _OnInteract(GameSlot<T> slot)
     {
         if (!OnInteract(slot)) return;
         OnInteractEvent?.Invoke(slot, this);
     }
 
-    public virtual void UpdateSlotPosition(GameSlot slot)
+    public virtual void UpdateSlotPosition(GameSlot<T> slot)
     {
         if (slotPrefab == null) return;
         var target = slotOffset * slot.index;
@@ -131,45 +131,47 @@ public abstract class GameList : MonoBehaviour
             target,
             Time.deltaTime * 7f);
     }
-    public virtual void ResetSlotPosition(GameSlot slot)
+    public virtual void ResetSlotPosition(GameSlot<T> slot)
     {
         if (slotPrefab == null) return;
         slot.transform.localPosition = slotOffset * slot.index;
     }
-    protected virtual void UpdateInteractText(GameSlot slot)
+    protected virtual void UpdateInteractText(GameSlot<T> slot)
     {
         if (slot.interactable != null)
             slot.interactable.interactText = GrabManager.Grabbed ? "push" : "pop";
     }
 
-    protected virtual GameSlot MakeSlot()
+    protected virtual GameSlot<T> MakeSlot()
     {
-        GameSlot slot;
+        GameSlot<T> slot;
         if (slotPrefab == null)
         {
             if (Slots.Count == 0)
             {
                 var go = new GameObject();
-                slot = go.AddComponent<GameSlot>();
+                var comp = go.AddComponent<GameSlot>();
+                slot = comp.Make<GameSlot<T>, T>(new GameSlot<T>(comp));
             }
             else
             {
                 var go = Instantiate(Slots[0].gameObject, slotsContainer.transform);
                 Utils.ClearChildren(go.transform);
-                slot = GetComponent<GameSlot>();
+                var comp = go.GetOrAddComponent<GameSlot>();
+                slot = comp.Make<GameSlot<T>, T>(new GameSlot<T>(comp));
             }
         }
         else
         {
-            slot = Instantiate(slotPrefab, slotsContainer.transform).GetComponent<GameSlot>();
-            slot.gameObject.SetActive(true);
+            var obj = Instantiate(slotPrefab, slotsContainer.transform);
+            var comp = obj.GetOrAddComponent<GameSlot>();
+            slot = comp.Make<GameSlot<T>, T>(new GameSlot<T>(comp));
         }
-        slot.Parent = this;
         slot.OnInteractEvent += _OnInteract;
         return slot;
     }
 
-    public virtual GameSlot AddSlot()
+    public virtual GameSlot<T> AddSlot()
     {
         var slot = MakeSlot();
         slot.index = Slots.Count;
@@ -178,11 +180,11 @@ public abstract class GameList : MonoBehaviour
         return slot;
     }
 
-    public virtual GameSlot FindSlot(GameObject item)
+    public virtual GameSlot<T> FindSlot(GameObject item)
     {
         var target = item.transform;
-        GameSlot slot;
-        while ((slot = target.GetComponent<GameSlot>()) == null)
+        GameSlot slotComponent;
+        while ((slotComponent = target.GetComponent<GameSlot>()) == null)
         {
             var parent = target.transform.parent;
             if (parent == null)
@@ -191,18 +193,17 @@ public abstract class GameList : MonoBehaviour
             }
             target = parent;
         }
-        return slot;
+        return slotComponent.Get<T>();
         //return Slots.Find(s => s.Item == item);
     }
 
-    protected virtual GameSlot AddGhost(GameObject ghost = null)
+    protected virtual GameSlot<T> AddGhost(T ghost = null)
     {
         var ghostSlot = MakeSlot();
         if (ghost)
         {
             ghostSlot.Insert(ghost, resetTransform: true);
         }
-        ghostSlot.gameObject.SetActive(true);
         ghostSlots.Add(ghostSlot);
         UpdateGhosts();
         return ghostSlot;
@@ -221,7 +222,7 @@ public abstract class GameList : MonoBehaviour
             }
         }
     }
-    public void ShowWarning(string text, GameSlot slot)
+    public void ShowWarning(string text, GameSlot<T> slot)
     {
         ClearWarning();
         MessageDisplay.Instance.ShowWarning(text, slot.transform);

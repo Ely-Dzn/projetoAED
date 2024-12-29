@@ -3,7 +3,6 @@ using System.Linq;
 using SpatialSys.UnitySDK;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 using Random = UnityEngine.Random;
 
 public class BallGameItem : GameItem
@@ -20,14 +19,13 @@ public class BallGameItem : GameItem
         // Aumentar raio para melhorar a seleção
         Transform.GetComponentInChildren<SphereCollider>().radius *= 2;
     }
-}
-public class GhostBallGameItem : GameItem
-{
-    public GhostBallGameItem() : base(Object.Instantiate(AssetManager.Load<GameObject>("Prefabs/Ball")))
+    public static BallGameItem MakeGhost()
     {
-        var renderer = GameObject.GetComponentInChildren<Renderer>(true);
+        var item = new BallGameItem(Color.clear);
+        var renderer = item.GameObject.GetComponentInChildren<Renderer>(true);
         var transparent = AssetManager.Load<Material>("Materials/Transparent");
         renderer.materials = Enumerable.Repeat(transparent, renderer.materials.Length).ToArray();
+        return item;
     }
 }
 
@@ -42,7 +40,6 @@ public class TestQueueGroup : MonoBehaviour
     private SpatialTriggerEvent grabArea;
     [SerializeField]
     private GameObject prefab;
-    private Material transparentMaterial;
 
     [SerializeField]
     private GameObject mainBall;
@@ -96,9 +93,7 @@ public class TestQueueGroup : MonoBehaviour
         queue.grabGroup = this;
         queue.OnInteractEvent += (_, _) => moves++;
 
-        transparentMaterial = AssetManager.Load<Material>("Materials/Transparent");
-
-        queue.BackGhost.Insert(new GhostBallGameItem(), resetTransform: true);
+        queue.BackGhost.Insert(BallGameItem.MakeGhost(), resetTransform: true);
 
         mainBallLine = mainBall.GetComponentInChildren<LineRenderer>();
         mainBallLine.positionCount = 2;
@@ -263,7 +258,7 @@ public class TestQueueGroup : MonoBehaviour
         foreach (var slot in queue.Slots)
         {
             if (!slot.IsFilled) continue;
-            var renderer = slot.GameObject.GetComponent<Renderer>();
+            var renderer = slot.ItemGameObject.GetComponent<Renderer>();
             if (!renderer) continue;
             hasColors.Add(colors.FindIndex(c => c == renderer.material.color));
         }

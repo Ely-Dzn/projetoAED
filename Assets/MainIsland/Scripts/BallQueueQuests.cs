@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using SpatialSys.UnitySDK;
+﻿using SpatialSys.UnitySDK;
 using UnityEngine;
 
 public class BallQueueQuests : MonoBehaviour

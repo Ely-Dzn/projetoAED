@@ -1,9 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using SpatialSys.UnitySDK;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,7 +36,7 @@ public class BookQuests : MonoBehaviour
             {
                 foreach (var stack in stacks.Lists)
                 {
-                    var item = (BookItem)stack.Slots[0].Item;
+                    var item = stack.Slots[0].Item;
                     if (stack.Count == 1 && item.Color == stacks.colors[1])
                     {
                         task.CompleteTask();
@@ -70,7 +66,7 @@ public class BookQuests : MonoBehaviour
                     int progress = 0;
                     for (int i = 0; i < task1Order.Length; i++)
                     {
-                        var item = (BookItem)stack.Slots[i].Item;
+                        var item = stack.Slots[i].Item;
                         if (item && item.Color == stacks.colors[task1Order[i]])
                         {
                             progress++;
@@ -92,7 +88,7 @@ public class BookQuests : MonoBehaviour
             });
     }
 
-    void HandleStart(GameSlot slot, GameList list)
+    void HandleStart()
     {
         playing = true;
         quest.quest.StartQuest();
