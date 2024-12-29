@@ -68,8 +68,8 @@ public class GameStack : GameList
                 return false;
             }
 
-            var item = GrabManager.Release().transform;
-            Push(item.gameObject);
+            var item = GrabManager.Release().item;
+            Push(item);
         }
         else
         {
@@ -101,7 +101,7 @@ public class GameStack : GameList
                 area = grabArea,
                 areaExitHandler = () =>
                 {
-                    Push(GrabManager.Release().gameObject, resetTransform: true);
+                    Push(GrabManager.Release().item, resetTransform: true);
                 }
             });
         }
@@ -109,7 +109,7 @@ public class GameStack : GameList
         return true;
     }
 
-    public virtual bool Push(GameObject item, bool resetTransform = false)
+    public virtual bool Push(GameItem item, bool resetTransform = false)
     {
         if (Count >= MaxSize) return false;
         GameSlot slot = Slots[Count];
@@ -117,8 +117,8 @@ public class GameStack : GameList
         Count++;
         slot.transform.localPosition = TopGhost.transform.localPosition;
         UpdateGhosts();
-        item.GetComponentInChildren<Collider>(true).enabled = true;
-        item.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        item.Transform.GetComponentInChildren<Collider>(true).enabled = true;
+        item.Transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         return true;
     }
     public virtual bool Pop()
@@ -127,7 +127,7 @@ public class GameStack : GameList
         var item = Slots[Count - 1].Extract();
         Count--;
         UpdateGhosts();
-        item.GetComponentInChildren<Collider>(true).enabled = false;
+        item.Transform.GetComponentInChildren<Collider>(true).enabled = false;
         return true;
     }
     public virtual GameObject Top
@@ -135,7 +135,7 @@ public class GameStack : GameList
         get
         {
             if (Count <= 0) return null;
-            return Slots[Count - 1].Item;
+            return Slots[Count - 1].GameObject;
         }
     }
     public virtual GameSlot TopSlot

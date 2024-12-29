@@ -21,6 +21,16 @@ public class AssetManager : MonoBehaviour
 
     public static T Load<T>(string key) where T : Object
     {
+#if UNITY_EDITOR
+        if (!Instance || !Instance.Loaded)
+        {
+            Debug.LogError("AssetManager não foi carregado ainda");
+        }
+        if (!Instance.dict.ContainsKey(key))
+        {
+            Debug.LogError($"Chave \"{key}\" não encontrada no AssetManager");
+        }
+#endif
         return Instance.dict[key] as T;
     }
 

@@ -8,8 +8,9 @@ public class GrabManager : MonoBehaviour
     public static GrabManager Instance { get; private set; }
     public class GrabInfo
     {
-        public Transform transform;
-        public GameObject gameObject => transform != null ? transform.gameObject : null;
+        public GameItem item;
+        public Transform transform => item.Transform;
+        public GameObject gameObject => item != null ? item.GameObject : null;
         public object extra = null;
         public object group = null;
         /// <summary>
@@ -22,13 +23,17 @@ public class GrabManager : MonoBehaviour
         //public Vector3 position = Vector3.zero;
         //public Quaternion rotation = Quaternion.identity;
         //public Vector3 scale = Vector3.one;
-        public GrabInfo(Transform target)
+        //public GrabInfo(Transform target)
+        //{
+        //    this.item = new BasicItem(target.gameObject);
+        //}
+        //public GrabInfo(GameObject target)
+        //{
+        //    this.item = new BasicItem(target);
+        //}
+        public GrabInfo(GameItem item)
         {
-            this.transform = target;
-        }
-        public GrabInfo(GameObject target)
-        {
-            this.transform = target.transform;
+            this.item = item;
         }
         public static implicit operator bool(GrabInfo info)
         {

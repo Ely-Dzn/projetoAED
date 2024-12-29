@@ -1325,7 +1325,7 @@ MonoBehaviour:
   slotsContainer: {fileID: 663615843}
   slotPrefab: {fileID: 7317856894609731336, guid: 575800671d6d5a1408926a2ed7b4c330,
     type: 3}
-  <MaxSize>k__BackingField: 8
+  <MaxSize>k__BackingField: 15
   <Count>k__BackingField: 0
   <targetSlot>k__BackingField: {fileID: 0}
   ghostSlots: []
@@ -9353,7 +9353,7 @@ MonoBehaviour:
   slotsContainer: {fileID: 797054542}
   slotPrefab: {fileID: 7317856894609731336, guid: 575800671d6d5a1408926a2ed7b4c330,
     type: 3}
-  <MaxSize>k__BackingField: 8
+  <MaxSize>k__BackingField: 15
   <Count>k__BackingField: 0
   <targetSlot>k__BackingField: {fileID: 0}
   ghostSlots: []
@@ -9558,7 +9558,7 @@ MonoBehaviour:
   slotsContainer: {fileID: 1179030726}
   slotPrefab: {fileID: 7317856894609731336, guid: 575800671d6d5a1408926a2ed7b4c330,
     type: 3}
-  <MaxSize>k__BackingField: 8
+  <MaxSize>k__BackingField: 15
   <Count>k__BackingField: 0
   <targetSlot>k__BackingField: {fileID: 0}
   ghostSlots: []

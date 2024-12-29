@@ -11,7 +11,6 @@ public class BookQuests : MonoBehaviour
 {
     private QuestWrapper quest;
     private BookStackGroup stacks;
-    private List<GameObject> initialBooks;
     [SerializeField]
     private GameObject colorsDisplay;
     private int[] task1Order = { 3, 1, 2, 4, 0 };
@@ -27,12 +26,6 @@ public class BookQuests : MonoBehaviour
 
         stacks.OnInteractEvent += HandleStart;
 
-        initialBooks = new();
-        foreach (var slot in stacks.Lists[0].Slots)
-        {
-            initialBooks.Add(slot.Item);
-        }
-
         // Separar o livro verde para começar o timer
         quest.AddTaskHandler(1,
             start: (task) =>
@@ -47,7 +40,8 @@ public class BookQuests : MonoBehaviour
             {
                 foreach (var stack in stacks.Lists)
                 {
-                    if (stack.Count == 1 && stack.Slots[0].Item == initialBooks[1])
+                    var item = (BookItem)stack.Slots[0].Item;
+                    if (stack.Count == 1 && item.Color == stacks.colors[1])
                     {
                         task.CompleteTask();
                         return;
@@ -74,9 +68,10 @@ public class BookQuests : MonoBehaviour
                 foreach (var stack in stacks.Lists)
                 {
                     int progress = 0;
-                    for (int i = 0; i < stack.Count; i++)
+                    for (int i = 0; i < task1Order.Length; i++)
                     {
-                        if (stack.Slots[i].Item == initialBooks[task1Order[i]])
+                        var item = (BookItem)stack.Slots[i].Item;
+                        if (item && item.Color == stacks.colors[task1Order[i]])
                         {
                             progress++;
                         }
@@ -105,9 +100,7 @@ public class BookQuests : MonoBehaviour
     }
     void Update()
     {
-        if (!playing
-            || initialBooks == null
-            || quest.quest.status != QuestStatus.InProgress) return;
+        if (!playing || quest.quest.status != QuestStatus.InProgress) return;
 
         quest.Update();
     }

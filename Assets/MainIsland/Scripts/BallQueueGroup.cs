@@ -3,6 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public class BallItem : GameItem
+{
+    private Color color;
+    public Color Color => color;
+    public BallItem(Color color) : base(Object.Instantiate(AssetManager.Load<GameObject>("Prefabs/Ball")))
+    {
+        this.color = color;
+        GameObject.GetComponentInChildren<Renderer>(true).material.color = color;
+    }
+}
+public class GhostBallItem : GameItem
+{
+    public GhostBallItem() : base(Object.Instantiate(AssetManager.Load<GameObject>("Prefabs/Ball")))
+    {
+        var renderer = GameObject.GetComponentInChildren<Renderer>(true);
+        var transparent = AssetManager.Load<Material>("Materials/Transparent");
+        renderer.materials = Enumerable.Repeat(transparent, renderer.materials.Length).ToArray();
+    }
+}
+
 public class BallQueueGroup : ListGroup<GameQueue>
 {
     public List<GameQueue> Queues => Lists;
@@ -19,19 +39,14 @@ public class BallQueueGroup : ListGroup<GameQueue>
 
         for (int i = 0; i < Queues[0].MaxSize; i++)
         {
-            var book = InstantiateBall(colors[i % colors.Count]);
-            Queues[0].Push(book, resetTransform: true);
+            Queues[0].Push(new BallItem(colors[i % colors.Count]), resetTransform: true);
         }
 
-        var ghost = InstantiateBall();
-        var r = ghost.GetComponentInChildren<Renderer>();
-        r.materials = Enumerable.Repeat(transparentMaterial, r.materials.Length).ToArray();
         foreach (var queue in Queues)
         {
-            queue.FrontGhost.Insert(Instantiate(ghost), resetTransform: true);
-            queue.BackGhost.Insert(Instantiate(ghost), resetTransform: true);
+            queue.FrontGhost.Insert(new GhostBallItem(), resetTransform: true);
+            queue.BackGhost.Insert(new GhostBallItem(), resetTransform: true);
         }
-        Destroy(ghost);
     }
     GameObject InstantiateBall(Color? color = null)
     {

@@ -83,7 +83,7 @@ public abstract class GameList : MonoBehaviour
     protected virtual GameSlot GetTargetSlot()
     {
         GameSlot slot = null;
-        if (Raycast.HasHit)
+        if (Raycast.HasHit && Raycast.Hit.transform)
         {
             slot = FindSlot(Raycast.Hit.transform.gameObject);
             if (slot != null && slot.interactable && !Utils.IsInteractableInRange(slot.interactable))

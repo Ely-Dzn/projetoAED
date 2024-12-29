@@ -3,69 +3,66 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+public class BookItem : GameItem
+{
+    private Color color;
+    public Color Color => color;
+    public BookItem(Color color) : base(Object.Instantiate(AssetManager.Load<GameObject>("Prefabs/Livro")))
+    {
+        this.color = color;
+        GameObject.GetComponentInChildren<Renderer>(true).material.color = color;
+    }
+}
+public class GhostBookItem : GameItem
+{
+    public GhostBookItem() : base(Object.Instantiate(AssetManager.Load<GameObject>("Prefabs/Livro")))
+    {
+        var renderer = GameObject.GetComponentInChildren<Renderer>(true);
+        var transparent = AssetManager.Load<Material>("Materials/Transparent");
+        renderer.materials = Enumerable.Repeat(transparent, renderer.materials.Length).ToArray();
+    }
+}
+
 [DisallowMultipleComponent]
 public class BookStackGroup : ListGroup<GameStack>
 {
     public List<GameStack> Stacks => Lists;
     public List<Color> colors;
-    private GameObject bookPrefab;
-    private Material transparentMaterial;
 
     new void Start()
     {
         base.Start();
 
-        transparentMaterial = AssetManager.Load<Material>("Materials/Transparent");
-        bookPrefab = AssetManager.Load<GameObject>("Prefabs/Livro");
-
         int colorIndex = 0;
         for (int i = 0; i < 5; i++)
         {
-            var book = InstantiateBook(colors[(colorIndex++) % colors.Count]);
+            var book = new BookItem(colors[(colorIndex++) % colors.Count]);
             Stacks[0].Push(book, resetTransform: true);
-            book.transform.rotation = GetRandomRotation();
+            book.Transform.rotation = GetRandomRotation();
         }
         for (int i = 0; i < 2; i++)
         {
-            var book = InstantiateBook(colors[(colorIndex++) % colors.Count]);
+            var book = new BookItem(colors[(colorIndex++) % colors.Count]);
             Stacks[1].Push(book, resetTransform: true);
-            book.transform.rotation = GetRandomRotation();
+            book.Transform.rotation = GetRandomRotation();
         }
         for (int i = 0; i < 3; i++)
         {
-            var book = InstantiateBook(colors[(colorIndex++) % colors.Count]);
+            var book = new BookItem(colors[(colorIndex++) % colors.Count]);
             Stacks[2].Push(book, resetTransform: true);
-            book.transform.rotation = GetRandomRotation();
+            book.Transform.rotation = GetRandomRotation();
         }
 
         // Livro fantasma do topo da pilha
-        var ghostBook = InstantiateBook();
-        var r = ghostBook.GetComponentInChildren<Renderer>();
-        r.materials = Enumerable.Repeat(transparentMaterial, r.materials.Length).ToArray();
         foreach (var stack in Stacks)
-            stack.TopGhost.Insert(Instantiate(ghostBook), resetTransform: true);
-        Destroy(ghostBook);
+        {
+            stack.TopGhost.Insert(new GhostBookItem(), resetTransform: true);
+        }
     }
 
     private Quaternion GetRandomRotation()
     {
         return Quaternion.Euler(0, (Random.value - 0.5f) * 90f, 0);
-    }
-
-    GameObject InstantiateBook(Color? coverColor = null, Color? pageColor = null)
-    {
-        var book = Instantiate(bookPrefab);
-
-        if (coverColor != null)
-        {
-            book.GetComponentInChildren<Renderer>().material.color = (Color)coverColor;
-        }
-        if (pageColor != null)
-        {
-            book.GetComponentInChildren<Renderer>().materials[1].color = (Color)pageColor;
-        }
-
-        return book;
     }
 
     //protected override Quaternion GetGrabbedRotation()

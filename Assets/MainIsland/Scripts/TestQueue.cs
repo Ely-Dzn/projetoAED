@@ -43,13 +43,11 @@ public class TestQueue : GameList
                 return false;
             }
 
-            var item = group.Grabbed.transform;
+            var item = group.Grabbed;
             group.Grabbed = null;
-            Push(item.gameObject);
+            Push(item, resetTransform: true);
 
-            item.GetComponentInChildren<Collider>(true).enabled = true;
-            item.localPosition = Vector3.zero;
-            item.rotation = slot.transform.rotation;
+            item.Transform.GetComponentInChildren<Collider>(true).enabled = true;
         }
         else
         {
@@ -57,11 +55,12 @@ public class TestQueue : GameList
             {
                 return false;
             }
-            var item = slot.Item;
+            var item = (BallGameItem)slot.Item;
             Remove(slot);
 
             group.Grabbed = item;
-            item.GetComponentInChildren<Collider>(true).enabled = false;
+
+            item.Transform.GetComponentInChildren<Collider>(true).enabled = false;
         }
 
         return true;
@@ -77,7 +76,7 @@ public class TestQueue : GameList
             slot.interactable.interactText = PlayerCanRelease() ? "push" : "pop";
     }
 
-    public bool Push(GameObject item, bool resetTransform = false)
+    public bool Push(GameItem item, bool resetTransform = false)
     {
         if (Count >= MaxSize) return false;
         GameSlot slot = Slots[Count];
@@ -108,13 +107,13 @@ public class TestQueue : GameList
         {
             if (slot.IsFilled)
             {
-                Destroy(slot.Extract().transform.gameObject);
+                slot.Extract().Destroy();
             }
         }
         UpdateGhosts();
     }
 
-    public GameObject Front
+    public GameItem Front
     {
         get
         {
@@ -130,7 +129,7 @@ public class TestQueue : GameList
             return Slots[0];
         }
     }
-    public virtual GameObject Back
+    public virtual GameItem Back
     {
         get
         {

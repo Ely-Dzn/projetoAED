@@ -74,12 +74,12 @@ public abstract class GameQueue : GameList
                 return false;
             }
 
-            var item = GrabManager.Release().transform;
-            Push(item.gameObject);
+            var item = GrabManager.Release().item;
+            Push(item);
 
-            item.GetComponentInChildren<Collider>(true).enabled = true;
-            item.localPosition = Vector3.zero;
-            item.rotation = slot.transform.rotation;
+            item.Transform.GetComponentInChildren<Collider>(true).enabled = true;
+            item.Transform.localPosition = Vector3.zero;
+            item.Transform.rotation = slot.transform.rotation;
         }
         else
         {
@@ -102,16 +102,16 @@ public abstract class GameQueue : GameList
                 area = grabArea,
                 areaExitHandler = () =>
                 {
-                    Push(GrabManager.Release().gameObject, resetTransform: true);
+                    Push(GrabManager.Release().item, resetTransform: true);
                 }
             });
-            item.GetComponentInChildren<Collider>(true).enabled = false;
+            item.Transform.GetComponentInChildren<Collider>(true).enabled = false;
         }
 
         return true;
     }
 
-    public virtual bool Push(GameObject item, bool resetTransform = false)
+    public virtual bool Push(GameItem item, bool resetTransform = false)
     {
         if (Count >= MaxSize) return false;
         GameSlot slot = Slots[Count];
@@ -143,7 +143,7 @@ public abstract class GameQueue : GameList
         get
         {
             if (Count <= 0) return null;
-            return Slots[0].Item;
+            return Slots[0].GameObject;
         }
     }
     public virtual GameSlot FrontSlot
@@ -159,7 +159,7 @@ public abstract class GameQueue : GameList
         get
         {
             if (Count <= 0) return null;
-            return Slots[Count - 1].Item;
+            return Slots[Count - 1].GameObject;
         }
     }
     public virtual GameSlot BackSlot

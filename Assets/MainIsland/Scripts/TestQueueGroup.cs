@@ -3,7 +3,33 @@ using System.Linq;
 using SpatialSys.UnitySDK;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 using Random = UnityEngine.Random;
+
+public class BallGameItem : GameItem
+{
+    private Color color;
+    public Color Color => color;
+    public BallGameItem(Color color) : base(Object.Instantiate(AssetManager.Load<GameObject>("Prefabs/Ball")))
+    {
+        this.color = color;
+        var renderer = Transform.GetComponent<Renderer>();
+        var mat = renderer.material;
+        mat.color = color;
+        renderer.material = mat;
+        // Aumentar raio para melhorar a seleção
+        Transform.GetComponentInChildren<SphereCollider>().radius *= 2;
+    }
+}
+public class GhostBallGameItem : GameItem
+{
+    public GhostBallGameItem() : base(Object.Instantiate(AssetManager.Load<GameObject>("Prefabs/Ball")))
+    {
+        var renderer = GameObject.GetComponentInChildren<Renderer>(true);
+        var transparent = AssetManager.Load<Material>("Materials/Transparent");
+        renderer.materials = Enumerable.Repeat(transparent, renderer.materials.Length).ToArray();
+    }
+}
 
 [DisallowMultipleComponent]
 public class TestQueueGroup : MonoBehaviour
@@ -32,8 +58,8 @@ public class TestQueueGroup : MonoBehaviour
     public Vector3 queueStartPos;
     public Transform hole;
     private Vector3 queueDirection;
-    private GameObject grabbed = null;
-    public GameObject Grabbed
+    private BallGameItem grabbed = null;
+    public BallGameItem Grabbed
     {
         get
         {
@@ -72,10 +98,7 @@ public class TestQueueGroup : MonoBehaviour
 
         transparentMaterial = AssetManager.Load<Material>("Materials/Transparent");
 
-        var ghost = InstantiateItem();
-        var r = ghost.GetComponentInChildren<Renderer>();
-        r.materials = Enumerable.Repeat(transparentMaterial, r.materials.Length).ToArray();
-        queue.BackGhost.Insert(ghost, resetTransform: true);
+        queue.BackGhost.Insert(new GhostBallGameItem(), resetTransform: true);
 
         mainBallLine = mainBall.GetComponentInChildren<LineRenderer>();
         mainBallLine.positionCount = 2;
@@ -126,7 +149,7 @@ public class TestQueueGroup : MonoBehaviour
         {
             var item = queue.Front;
             queue.Remove(queue.FrontSlot);
-            Destroy(item);
+            item.Destroy();
             queue.transform.position -= queueDirection * 0.5f;
             if (queue.Count == 0)
             {
@@ -152,7 +175,7 @@ public class TestQueueGroup : MonoBehaviour
 
         if (Grabbed)
         {
-            Grabbed.transform.position = Vector3.Lerp(Grabbed.transform.position, mainBall.transform.position, 0.5f);
+            Grabbed.Transform.position = Vector3.Lerp(Grabbed.Transform.position, mainBall.transform.position, 0.5f);
         }
     }
 
@@ -160,7 +183,7 @@ public class TestQueueGroup : MonoBehaviour
     {
         if (!playing || !Grabbed) return;
         var item = Grabbed;
-        if (item.GetComponent<Renderer>().material.color == NextColor)
+        if (item.Color == NextColor)
         {
             collected++;
             NextColor = GetNextColor();
@@ -172,11 +195,11 @@ public class TestQueueGroup : MonoBehaviour
         queue.transform.position -= queueDirection * 0.25f;
         Debug.Log($"Coletados: {collected}, Movimentações: {moves}");
         Grabbed = null;
-        bowlItems.Add(item.transform);
-        item.GetComponentInChildren<Outline>().enabled = false;
-        item.transform.SetParent(bowl.transform);
-        item.layer = Layers.IgnoreRaycast;
-        transit.Add(item.transform);
+        bowlItems.Add(item.Transform);
+        item.Transform.GetComponentInChildren<Outline>().enabled = false;
+        item.Transform.SetParent(bowl.transform);
+        item.GameObject.layer = Layers.IgnoreRaycast;
+        transit.Add(item.Transform);
 
         if (queue.Count == 0)
         {
@@ -206,7 +229,7 @@ public class TestQueueGroup : MonoBehaviour
         bowlOutline.enabled = false;
         colorDisplay.enabled = false;
         queue.Clear();
-        Destroy(Grabbed);
+        Grabbed.Destroy();
         Grabbed = null;
         foreach (var item in bowlItems)
         {
@@ -228,7 +251,7 @@ public class TestQueueGroup : MonoBehaviour
         var n = queue.MaxSize * round / 4;
         for (int i = 0; i < n; i++)
         {
-            var item = InstantiateItem(colors[Random.Range(0, colors.Count)]);
+            var item = new BallGameItem(GetRandomColor());
             queue.Push(item, resetTransform: true);
         }
         NextColor = GetNextColor();
@@ -240,7 +263,7 @@ public class TestQueueGroup : MonoBehaviour
         foreach (var slot in queue.Slots)
         {
             if (!slot.IsFilled) continue;
-            var renderer = slot.Item.GetComponent<Renderer>();
+            var renderer = slot.GameObject.GetComponent<Renderer>();
             if (!renderer) continue;
             hasColors.Add(colors.FindIndex(c => c == renderer.material.color));
         }
@@ -249,19 +272,8 @@ public class TestQueueGroup : MonoBehaviour
         return colors[hasColors[Random.Range(0, size)]];
     }
 
-    protected GameObject InstantiateItem(Color c)
+    protected Color GetRandomColor()
     {
-        var item = Instantiate(prefab);
-        var renderer = item.GetComponent<Renderer>();
-        var mat = renderer.material;
-        mat.color = c;
-        renderer.material = mat;
-        // Aumentar raio para melhorar a seleção
-        item.GetComponentInChildren<SphereCollider>().radius *= 2;
-        return item;
-    }
-    protected GameObject InstantiateItem()
-    {
-        return InstantiateItem(colors[Random.Range(0, colors.Count)]);
+        return colors[Random.Range(0, colors.Count)];
     }
 }

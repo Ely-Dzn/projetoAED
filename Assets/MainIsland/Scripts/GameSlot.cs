@@ -6,8 +6,10 @@ public class GameSlot : MonoBehaviour
     public GameList Parent;
     public int index;
     [field: SerializeField]
-    public GameObject Item { get; protected set; }
-    public bool IsFilled => Item != null;
+    public GameItem Item { get; protected set; }
+    public GameObject GameObject => Item.GameObject;
+    public Transform Transform => Item.GameObject.transform;
+    public bool IsFilled => GameObject != null;
     public SpatialInteractable interactable;
     public Outline outline;
     public delegate void InteractHandler(GameSlot slot);
@@ -33,16 +35,21 @@ public class GameSlot : MonoBehaviour
         OnInteractEvent?.Invoke(this);
     }
 
-    public void Insert(GameObject item, bool resetTransform = false)
+    public void Insert(GameItem item, bool resetTransform = false)
     {
         Item = item;
         if (resetTransform)
-            item.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-        item.transform.SetParent(transform, !resetTransform);
+            item.Transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        item.Transform.SetParent(transform, !resetTransform);
         if (outline == null)
             outline = GetComponentInChildren<Outline>(true);
     }
-    public GameObject Extract()
+    public void Insert(GameObject go, bool resetTransform = false)
+    {
+        Insert(new GameItem(go), resetTransform: resetTransform);
+    }
+
+    public GameItem Extract()
     {
         var oldItem = Item;
         Item = null;
