@@ -7,27 +7,51 @@ using Task = SpatialSys.UnitySDK.SpatialQuest.Task;
 
 public class QuestWrapper
 {
-    class TaskHandler
+    public class TaskHandler
     {
         public readonly Task task;
-        public Action<Task> OnStart { get; }
-        public Action<Task> OnUpdate { get; }
-        public Action<Task> OnFinish { get; }
-        public void Start() => OnStart?.Invoke(task);
-        public void Update() => OnUpdate?.Invoke(task);
-        public void Finish() => OnFinish?.Invoke(task);
+        private bool running = false;
+        private readonly Action<Task> onStart;
+        private readonly Action<Task> onUpdate;
+        private readonly Action<Task> onFinish;
+        private readonly Action<Task> onCleanup;
+        public void Start() => onStart?.Invoke(task);
+        public void Update()
+        {
+            if (!running)
+            {
+                running = true;
+                Start();
+            }
+            onUpdate?.Invoke(task);
+        }
+        public void Finish() => onFinish?.Invoke(task);
+        public void Cleanup() => onCleanup?.Invoke(task);
 
-        public TaskHandler(Task task,
+        public TaskHandler(
+            QuestWrapper quest,
+            Task task,
             Action<Task> onStart = null,
             Action<Task> onUpdate = null,
-            Action<Task> onFinish = null)
+            Action<Task> onFinish = null,
+            Action<Task> onCleanup = null)
         {
             this.task = task;
-            OnStart = onStart;
-            OnUpdate = onUpdate;
-            OnFinish = onFinish;
+            this.onStart = onStart;
+            this.onUpdate = onUpdate;
+            this.onFinish = onFinish;
+            this.onCleanup = onCleanup;
+
             task.onStartedEvent += Start;
-            task.onCompletedEvent += Finish;
+            task.onCompletedEvent += () =>
+            {
+                Finish();
+                Cleanup();
+            };
+            quest.quest.onResetEvent += () =>
+            {
+                if (running) Cleanup();
+            };
         }
     }
 
@@ -48,15 +72,17 @@ public class QuestWrapper
     {
         this.quest = quest;
     }
-    public void AddTaskHandler(uint id,
+    public void AddTaskHandler(
+        uint id,
         Action<Task> start = null,
         Action<Task> update = null,
-        Action<Task> finish = null)
+        Action<Task> finish = null,
+        Action<Task> cleanup = null)
     {
         try
         {
             var task = quest.tasks.Where(task => task.id == id).First();
-            var handler = new TaskHandler(task, start, update, finish);
+            var handler = new TaskHandler(this, task, start, update, finish, cleanup);
             handlers[id] = handler;
         }
         catch

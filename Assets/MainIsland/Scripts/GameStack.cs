@@ -28,6 +28,7 @@ public class GameStack<T> : GameList<T> where T : GameItem
 
         base.UpdateGhosts();
     }
+
     public enum Warning
     {
         Full,
@@ -119,6 +120,9 @@ public class GameStack<T> : GameList<T> where T : GameItem
         Count++;
         slot.transform.localPosition = TopGhost.transform.localPosition;
         UpdateGhosts();
+        foreach (var s in Slots) {
+            UpdateSlotPosition(s);
+        }
         item.Transform.GetComponentInChildren<Collider>(true).enabled = true;
         item.Transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         return true;
@@ -132,12 +136,12 @@ public class GameStack<T> : GameList<T> where T : GameItem
         item.Transform.GetComponentInChildren<Collider>(true).enabled = false;
         return true;
     }
-    public virtual GameObject Top
+    public virtual GameItem Top
     {
         get
         {
             if (Count <= 0) return null;
-            return Slots[Count - 1].ItemGameObject;
+            return Slots[Count - 1].Item;
         }
     }
     public virtual GameSlot<T> TopSlot

@@ -6,47 +6,53 @@ using UnityEngine.UI;
 public class BookQuests : MonoBehaviour
 {
     private QuestWrapper quest;
-    private BookStackGroup stacks;
+    private BookStackGroup group;
     [SerializeField]
     private GameObject colorsDisplay;
     private int[] task1Order = { 3, 1, 2, 4, 0 };
+    public SpatialInteractable startButton;
     private bool playing = false;
 
     IEnumerator Start()
     {
         quest = new QuestWrapper(GetComponent<SpatialQuest>());
-        stacks = GetComponent<BookStackGroup>();
+        group = GetComponent<BookStackGroup>();
 
         //TODO: usar "yield return null;"
-        yield return new WaitUntil(() => stacks.Lists != null && stacks.Lists.Count > 0 && stacks.Lists[0].Count > 0);
+        yield return new WaitUntil(() => group.Lists != null && group.Lists.Count > 0 && group.Lists[0].Count > 0);
 
-        stacks.OnInteractEvent += HandleStart;
+        startButton.onInteractEvent += HandleButton;
 
-        // Separar o livro verde para começar o timer
+        group.GrabArea.onExitEvent += () =>
+        {
+            if (playing)
+            {
+                HandleButton();
+            }
+        };
+
+        // Separar o livro verde
         quest.AddTaskHandler(1,
             start: (task) =>
             {
+                GameTimer.Instance.Begin();
                 colorsDisplay.SetActive(false);
-                foreach (var x in quest.quest.tasks)
+                foreach (var t in quest.quest.tasks)
                 {
-                    GameTimer.Instance.labels.Add(x.name);
+                    GameTimer.Instance.labels.Add(t.name);
                 }
             },
             update: (task) =>
             {
-                foreach (var stack in stacks.Lists)
+                foreach (var stack in group.Lists)
                 {
                     var item = stack.Slots[0].Item;
-                    if (stack.Count == 1 && item.Color == stacks.colors[1])
+                    if (stack.Count == 1 && item.Color == group.colors[1])
                     {
                         task.CompleteTask();
                         return;
                     }
                 }
-            },
-            finish: (task) =>
-            {
-                GameTimer.Instance.Begin();
             });
 
         quest.AddTaskHandler(2,
@@ -56,43 +62,57 @@ public class BookQuests : MonoBehaviour
                 for (int i = 0; i < colorsDisplay.transform.childCount; i++)
                 {
                     var el = colorsDisplay.transform.GetChild(i).GetComponent<RawImage>();
-                    el.color = stacks.colors[task1Order[i]];
+                    el.color = group.colors[task1Order[i]];
                 }
             },
             update: (task) =>
             {
-                foreach (var stack in stacks.Lists)
+                int bestProgress = 0;
+                foreach (var stack in group.Lists)
                 {
                     int progress = 0;
                     for (int i = 0; i < task1Order.Length; i++)
                     {
                         var item = stack.Slots[i].Item;
-                        if (item && item.Color == stacks.colors[task1Order[i]])
+                        if (item && item.Color == group.colors[task1Order[i]])
                         {
                             progress++;
                         }
                     }
-                    task.progress = progress;
-                    if (progress == 5)
-                    {
-                        task.CompleteTask();
-                        return;
-                    }
+                    bestProgress = Mathf.Max(bestProgress, progress);
+                }
+
+                task.progress = bestProgress;
+                if (bestProgress == task1Order.Length)
+                {
+                    GameTimer.Instance.Stop();
+                    playing = false;
+                    task.CompleteTask();
+                    return;
                 }
             },
-            finish: (task) =>
+            cleanup: (task) =>
             {
-                GameTimer.Instance.Stop();
                 colorsDisplay.SetActive(false);
-                playing = false;
             });
     }
 
-    void HandleStart()
+    void HandleButton()
     {
-        playing = true;
-        quest.quest.StartQuest();
-        stacks.OnInteractEvent -= HandleStart;
+        if (playing)
+        {
+            playing = false;
+            GameTimer.Instance.Stop();
+            quest.quest.ResetQuest();
+            startButton.interactText = "Começar";
+        }
+        else
+        {
+            group.ResetBooks();
+            playing = true;
+            quest.quest.StartQuest();
+            startButton.interactText = "Parar";
+        }
     }
     void Update()
     {

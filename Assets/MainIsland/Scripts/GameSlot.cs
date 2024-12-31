@@ -61,11 +61,9 @@ public class GameSlot<T> where T : GameItem
     private readonly GameSlot component;
     [field: SerializeField]
     public T Item { get; protected set; }
-    public GameObject ItemGameObject => Item.GameObject;
-    public Transform ItemTransform => Item.Transform;
     public GameObject gameObject => component.gameObject;
     public Transform transform => component.transform;
-    public bool IsFilled => ItemGameObject != null;
+    public bool IsFilled => Item != null;
     public SpatialInteractable interactable = null;
     public Outline outline = null;
     public delegate void InteractHandler(GameSlot<T> slot);

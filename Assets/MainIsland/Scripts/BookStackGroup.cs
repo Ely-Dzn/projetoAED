@@ -13,6 +13,22 @@ public class BookStackGroup : ListGroup<BookStack, BookStack.Item>
     {
         base.Start();
 
+        ResetBooks();
+    }
+
+    public void ResetBooks()
+    {
+        if (GrabManager.Grabbed && GrabManager.Grabbed.item is BookStack.Item)
+        {
+            GrabManager.Release().item.Destroy();
+        }
+
+        foreach (var stack in Stacks)
+        {
+            stack.Clear();
+        }
+
+
         int colorIndex = 0;
         for (int i = 0; i < 5; i++)
         {
@@ -31,12 +47,6 @@ public class BookStackGroup : ListGroup<BookStack, BookStack.Item>
             var book = new BookStack.Item(colors[(colorIndex++) % colors.Count]);
             Stacks[2].Push(book, resetTransform: true);
             book.Transform.rotation = GetRandomRotation();
-        }
-
-        // Livro fantasma do topo da pilha
-        foreach (var stack in Stacks)
-        {
-            stack.TopGhost.Insert(BookStack.Item.MakeGhost(), resetTransform: true);
         }
     }
 

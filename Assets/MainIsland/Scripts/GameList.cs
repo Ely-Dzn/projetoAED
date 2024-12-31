@@ -19,6 +19,7 @@ public abstract class GameList<T> : MonoBehaviour where T : GameItem
     public GameSlot<T> targetSlot { get; protected set; } = null;
     public delegate void InteractHandler(GameSlot<T> slot, GameList<T> list);
     public event InteractHandler OnInteractEvent;
+    public event InteractHandler OnInteractFailEvent;
     protected List<GameSlot<T>> ghostSlots = new();
     protected GameSlot<T> warnedSlot = null;
     public Object grabGroup;
@@ -118,7 +119,11 @@ public abstract class GameList<T> : MonoBehaviour where T : GameItem
     }
     protected void _OnInteract(GameSlot<T> slot)
     {
-        if (!OnInteract(slot)) return;
+        if (!OnInteract(slot))
+        {
+            OnInteractFailEvent?.Invoke(slot, this);
+            return;
+        }
         OnInteractEvent?.Invoke(slot, this);
     }
 
@@ -140,6 +145,21 @@ public abstract class GameList<T> : MonoBehaviour where T : GameItem
     {
         if (slot.interactable != null)
             slot.interactable.interactText = GrabManager.Grabbed ? "push" : "pop";
+    }
+
+    public virtual void Clear()
+    {
+        foreach (var slot in Slots)
+        {
+            if (slot.IsFilled) slot.Extract().Destroy();
+        }
+        Count = 0;
+        foreach (var slot in Slots)
+        {
+            UpdateSlot(slot);
+            ResetSlotPosition(slot);
+        }
+        UpdateGhosts();
     }
 
     protected virtual GameSlot<T> MakeSlot()

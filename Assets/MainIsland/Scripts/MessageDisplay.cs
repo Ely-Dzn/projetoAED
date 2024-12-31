@@ -34,9 +34,10 @@ public class MessageDisplay : MonoBehaviour
         ClearMessage();
         this.target = target;
         tmptext.text = text;
-        var player = SpatialBridge.actorService.localActor.avatar;
-        var dir = player.position - target.position;
-        dir.y = 0;
+        //var player = SpatialBridge.actorService.localActor.avatar;
+        var cam = SpatialBridge.cameraService;
+        var dir = cam.position - target.position;
+        //dir.y = 0;
         dir.Normalize();
         messageObject.transform.SetPositionAndRotation(
             target.position + dir,

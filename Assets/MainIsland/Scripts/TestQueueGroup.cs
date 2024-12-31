@@ -258,7 +258,7 @@ public class TestQueueGroup : MonoBehaviour
         foreach (var slot in queue.Slots)
         {
             if (!slot.IsFilled) continue;
-            var renderer = slot.ItemGameObject.GetComponent<Renderer>();
+            var renderer = slot.Item.GameObject.GetComponent<Renderer>();
             if (!renderer) continue;
             hasColors.Add(colors.FindIndex(c => c == renderer.material.color));
         }

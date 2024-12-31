@@ -1327,8 +1327,6 @@ MonoBehaviour:
     type: 3}
   <MaxSize>k__BackingField: 15
   <Count>k__BackingField: 0
-  <targetSlot>k__BackingField: {fileID: 0}
-  ghostSlots: []
   grabGroup: {fileID: 0}
   grabArea: {fileID: 0}
 --- !u!1 &319197328
@@ -1454,8 +1452,6 @@ MonoBehaviour:
     type: 3}
   <MaxSize>k__BackingField: 24
   <Count>k__BackingField: 0
-  <targetSlot>k__BackingField: {fileID: 0}
-  ghostSlots: []
   grabGroup: {fileID: 0}
   grabArea: {fileID: 0}
   group: {fileID: 0}
@@ -1510,8 +1506,8 @@ MonoBehaviour:
     material: {fileID: 0}
   iconType: 0
   icon: {fileID: 0}
-  interactiveRadius: 5
-  visibilityRadius: 10
+  interactiveRadius: 3
+  visibilityRadius: 4
   onInteractEvent:
     id: 0
     unityEventIsSynced: 0
@@ -1894,6 +1890,7 @@ Transform:
   m_Children:
   - {fileID: 462585518}
   - {fileID: 1781364592}
+  - {fileID: 1212664897}
   m_Father: {fileID: 0}
   m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1930,6 +1927,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   colorsDisplay: {fileID: 1781364591}
+  startButton: {fileID: 1212664898}
 --- !u!114 &451890530
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4887,8 +4885,8 @@ MonoBehaviour:
     material: {fileID: 0}
   iconType: 0
   icon: {fileID: 0}
-  interactiveRadius: 5
-  visibilityRadius: 10
+  interactiveRadius: 3
+  visibilityRadius: 4
   onInteractEvent:
     id: 0
     unityEventIsSynced: 0
@@ -5428,6 +5426,55 @@ Transform:
   m_Father: {fileID: 857859416}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1027648768
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1027648769}
+  - component: {fileID: 1027648770}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1027648769
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027648768}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1701398711}
+  m_Father: {fileID: 1212664897}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &1027648770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1027648768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a89e27b66bee3f47ae61b59dde50e8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lookAtCamera: 0
+  invert: 0
+  lockY: 1
+  rotateSpeed: 1
 --- !u!1 &1037138543
 GameObject:
   m_ObjectHideFlags: 0
@@ -5640,8 +5687,6 @@ MonoBehaviour:
     type: 3}
   <MaxSize>k__BackingField: 5
   <Count>k__BackingField: 0
-  <targetSlot>k__BackingField: {fileID: 0}
-  ghostSlots: []
   grabGroup: {fileID: 0}
   grabArea: {fileID: 0}
 --- !u!1001 &1070012957
@@ -6813,6 +6858,90 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1212664896
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1212664897}
+  - component: {fileID: 1212664898}
+  m_Layer: 0
+  m_Name: Button
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1212664897
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212664896}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.896, y: -1.346, z: 0.728}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1027648769}
+  m_Father: {fileID: 451890527}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1212664898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212664896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a1c437d99c9a4616adbe21f3ffa0e18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactText: "Come\xE7ar"
+  textFontOverride:
+    overrideFont: 0
+    font: {fileID: 0}
+    material: {fileID: 0}
+  iconType: 0
+  icon: {fileID: 0}
+  interactiveRadius: 2.778244
+  visibilityRadius: 4.3831024
+  onInteractEvent:
+    id: 0
+    unityEventIsSynced: 0
+    unityEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    animatorEvent:
+      events: []
+    questEvent:
+      events: []
+  onEnterEvent:
+    id: 0
+    unityEventIsSynced: 0
+    unityEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    animatorEvent:
+      events: []
+    questEvent:
+      events: []
+  onExitEvent:
+    id: 0
+    unityEventIsSynced: 0
+    unityEvent:
+      m_PersistentCalls:
+        m_Calls: []
+    animatorEvent:
+      events: []
+    questEvent:
+      events: []
 --- !u!1 &1224507275
 GameObject:
   m_ObjectHideFlags: 0
@@ -6864,8 +6993,8 @@ MonoBehaviour:
     material: {fileID: 0}
   iconType: 0
   icon: {fileID: 0}
-  interactiveRadius: 5
-  visibilityRadius: 10
+  interactiveRadius: 3
+  visibilityRadius: 4
   onInteractEvent:
     id: 0
     unityEventIsSynced: 0
@@ -9355,8 +9484,6 @@ MonoBehaviour:
     type: 3}
   <MaxSize>k__BackingField: 15
   <Count>k__BackingField: 0
-  <targetSlot>k__BackingField: {fileID: 0}
-  ghostSlots: []
   grabGroup: {fileID: 0}
   grabArea: {fileID: 0}
 --- !u!1 &1489236929
@@ -9560,8 +9687,6 @@ MonoBehaviour:
     type: 3}
   <MaxSize>k__BackingField: 15
   <Count>k__BackingField: 0
-  <targetSlot>k__BackingField: {fileID: 0}
-  ghostSlots: []
   grabGroup: {fileID: 0}
   grabArea: {fileID: 0}
 --- !u!1 &1525552146
@@ -10519,8 +10644,6 @@ MonoBehaviour:
     type: 3}
   <MaxSize>k__BackingField: 5
   <Count>k__BackingField: 0
-  <targetSlot>k__BackingField: {fileID: 0}
-  ghostSlots: []
   grabGroup: {fileID: 0}
   grabArea: {fileID: 0}
 --- !u!1 &1599168895
@@ -10846,6 +10969,80 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1661599590}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &1688280279
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1027648769}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f36dbfa6f745873469c3db9ea63127c7,
+        type: 3}
+      propertyPath: m_Name
+      value: Play
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f36dbfa6f745873469c3db9ea63127c7, type: 3}
 --- !u!1 &1695347137
 GameObject:
   m_ObjectHideFlags: 0
@@ -10944,6 +11141,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1695347137}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1701398711 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f36dbfa6f745873469c3db9ea63127c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1688280279}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1710054776
 GameObject:
   m_ObjectHideFlags: 0
@@ -11039,8 +11242,8 @@ MonoBehaviour:
     material: {fileID: 0}
   iconType: 0
   icon: {fileID: 0}
-  interactiveRadius: 5
-  visibilityRadius: 10
+  interactiveRadius: 3
+  visibilityRadius: 4
   onInteractEvent:
     id: 0
     unityEventIsSynced: 0
@@ -12944,8 +13147,6 @@ MonoBehaviour:
     type: 3}
   <MaxSize>k__BackingField: 5
   <Count>k__BackingField: 0
-  <targetSlot>k__BackingField: {fileID: 0}
-  ghostSlots: []
   grabGroup: {fileID: 0}
   grabArea: {fileID: 0}
 --- !u!1 &2001580873

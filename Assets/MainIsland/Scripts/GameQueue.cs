@@ -140,12 +140,12 @@ public abstract class GameQueue<T> : GameList<T> where T : GameItem
         return true;
     }
 
-    public virtual GameObject Front
+    public virtual T Front
     {
         get
         {
             if (Count <= 0) return null;
-            return Slots[0].ItemGameObject;
+            return Slots[0].Item;
         }
     }
     public virtual GameSlot<T> FrontSlot
@@ -156,12 +156,12 @@ public abstract class GameQueue<T> : GameList<T> where T : GameItem
             return Slots[0];
         }
     }
-    public virtual GameObject Back
+    public virtual T Back
     {
         get
         {
             if (Count <= 0) return null;
-            return Slots[Count - 1].ItemGameObject;
+            return Slots[Count - 1].Item;
         }
     }
     public virtual GameSlot<T> BackSlot

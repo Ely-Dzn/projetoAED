@@ -103,17 +103,6 @@ public class TestQueue : GameList<BallGameItem>
         UpdateGhosts();
         return true;
     }
-    public void Clear()
-    {
-        foreach (var slot in Slots)
-        {
-            if (slot.IsFilled)
-            {
-                slot.Extract().Destroy();
-            }
-        }
-        UpdateGhosts();
-    }
 
     public GameItem Front
     {
