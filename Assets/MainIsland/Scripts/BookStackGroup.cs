@@ -8,12 +8,17 @@ public class BookStackGroup : ListGroup<BookStack, BookStack.Item>
 {
     public List<BookStack> Stacks => Lists;
     public List<Color> colors;
+    public static readonly int[][] defaultBooks = {
+        new int[]{ 0, 1, 2, 3, 4 },
+        new int[]{ 3, 1 },
+        new int[]{ 2, 4, 0 },
+    };
 
     new void Start()
     {
         base.Start();
 
-        ResetBooks();
+        PopulateBooks(defaultBooks);
     }
 
     public void ResetBooks()
@@ -27,26 +32,17 @@ public class BookStackGroup : ListGroup<BookStack, BookStack.Item>
         {
             stack.Clear();
         }
-
-
-        int colorIndex = 0;
-        for (int i = 0; i < 5; i++)
+    }
+    public void PopulateBooks(int[][] books)
+    {
+        for (int i = 0; i < books.Length; i++)
         {
-            var book = new BookStack.Item(colors[(colorIndex++) % colors.Count]);
-            Stacks[0].Push(book, resetTransform: true);
-            book.Transform.rotation = GetRandomRotation();
-        }
-        for (int i = 0; i < 2; i++)
-        {
-            var book = new BookStack.Item(colors[(colorIndex++) % colors.Count]);
-            Stacks[1].Push(book, resetTransform: true);
-            book.Transform.rotation = GetRandomRotation();
-        }
-        for (int i = 0; i < 3; i++)
-        {
-            var book = new BookStack.Item(colors[(colorIndex++) % colors.Count]);
-            Stacks[2].Push(book, resetTransform: true);
-            book.Transform.rotation = GetRandomRotation();
+            for (int j = 0; j < books[i].Length; j++)
+            {
+                var book = new BookStack.Item(colors[books[i][j]]);
+                Stacks[i].Push(book, resetTransform: true);
+                book.Transform.rotation = GetRandomRotation();
+            }
         }
     }
 

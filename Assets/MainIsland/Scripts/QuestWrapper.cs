@@ -4,6 +4,7 @@ using System.Linq;
 using System;
 
 using Task = SpatialSys.UnitySDK.SpatialQuest.Task;
+using UnityEngine;
 
 public class QuestWrapper
 {
@@ -71,6 +72,18 @@ public class QuestWrapper
     public QuestWrapper(SpatialQuest quest)
     {
         this.quest = quest;
+
+        foreach (var task in quest.tasks)
+        {
+            task.onStartedEvent += new Action(() =>
+            {
+                Debug.Log($"Task {task.name} started");
+            });
+            task.onCompletedEvent += new Action(() =>
+            {
+                Debug.Log($"Task {task.name} completed");
+            });
+        }
     }
     public void AddTaskHandler(
         uint id,
