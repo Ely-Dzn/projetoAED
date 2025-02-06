@@ -47,6 +47,7 @@ public class GameSlot : MonoBehaviour
 
         return slot;
     }
+
     Action _OnDestroy;
     void OnDestroy()
     {

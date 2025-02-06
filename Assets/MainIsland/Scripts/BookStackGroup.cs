@@ -18,10 +18,10 @@ public class BookStackGroup : ListGroup<BookStack, BookStack.Item>
     {
         base.Start();
 
-        PopulateBooks(defaultBooks);
+        Populate(defaultBooks);
     }
 
-    public void ResetBooks()
+    public void Clear()
     {
         if (GrabManager.Grabbed && GrabManager.Grabbed.item is BookStack.Item)
         {
@@ -33,7 +33,7 @@ public class BookStackGroup : ListGroup<BookStack, BookStack.Item>
             stack.Clear();
         }
     }
-    public void PopulateBooks(int[][] books)
+    public void Populate(int[][] books)
     {
         for (int i = 0; i < books.Length; i++)
         {

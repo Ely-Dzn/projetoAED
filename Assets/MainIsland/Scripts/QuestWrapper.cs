@@ -115,4 +115,13 @@ public class QuestWrapper
             handler.Update();
         }
     }
+
+    public void Start()
+    {
+        quest.StartQuest();
+    }
+    public void Reset()
+    {
+        quest.ResetQuest();
+    }
 }

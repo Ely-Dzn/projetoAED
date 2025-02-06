@@ -42,6 +42,7 @@ public class GameTimer : MonoBehaviour
             stringBuilder.AppendLine(FormatTime(times[i]));
         }
         text.text = stringBuilder.ToString();
+        //TODO: atualizar a altura da caixa
     }
 
     public void Begin(string label = null)

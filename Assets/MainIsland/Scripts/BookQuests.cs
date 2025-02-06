@@ -32,8 +32,8 @@ public class BookQuests : MonoBehaviour
         quest.AddTaskHandler(1,
             start: (task) =>
             {
-                group.ResetBooks();
-                group.PopulateBooks(BookStackGroup.defaultBooks);
+                group.Clear();
+                group.Populate(BookStackGroup.defaultBooks);
                 task1Anim.SetActive(true);
                 for (int i = 0; i < colorsDisplay.transform.childCount; i++)
                 {
@@ -82,8 +82,8 @@ public class BookQuests : MonoBehaviour
         quest.AddTaskHandler(2,
             start: (task) =>
             {
-                group.ResetBooks();
-                group.PopulateBooks(new int[][]{
+                group.Clear();
+                group.Populate(new int[][]{
                     new int[] { 0, 2, 2, 0 },
                     new int[] { 2, 0, 2, 2, 2 },
                     new int[] { 0, 0, 2, 0 },
@@ -128,8 +128,8 @@ public class BookQuests : MonoBehaviour
         quest.AddTaskHandler(3,
             start: (task) =>
             {
-                group.ResetBooks();
-                group.PopulateBooks(new int[][]{
+                group.Clear();
+                group.Populate(new int[][]{
                     new int[] { 1, 0, 0 },
                     new int[] { 2, 2, 1, 1 },
                     new int[] { 2, 1, 0, 0 },
@@ -188,16 +188,16 @@ public class BookQuests : MonoBehaviour
             GameTimer.Instance.labels.Add(t.name);
         }
         GameTimer.Instance.Begin();
-        quest.quest.StartQuest();
+        quest.Start();
         startButton.interactText = "Parar";
     }
     void StopPlaying()
     {
-        group.ResetBooks();
-        group.PopulateBooks(BookStackGroup.defaultBooks);
+        group.Clear();
+        group.Populate(BookStackGroup.defaultBooks);
         playing = false;
         GameTimer.Instance.Stop();
-        quest.quest.ResetQuest();
+        quest.Reset();
         startButton.interactText = "Começar";
     }
     void Update()

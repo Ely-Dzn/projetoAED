@@ -6,20 +6,40 @@ public class BallQueueGroup : ListGroup<BallQueue, BallQueue.Item>
 {
     public List<BallQueue> Queues => Lists;
     public List<Color> colors;
+    public static readonly int[][] defaultItems = {
+        new int[]{ 0, 1, 2, 3, 4 },
+        new int[]{ 3, 1 },
+        new int[]{ 2, 4, 0 },
+    };
 
     new void Start()
     {
         base.Start();
 
-        for (int i = 0; i < Queues[0].MaxSize; i++)
+        Populate(defaultItems);
+    }
+
+    public void Clear()
+    {
+        if (GrabManager.Grabbed && GrabManager.Grabbed.item is BookStack.Item)
         {
-            Queues[0].Push(new BallQueue.Item(colors[i % colors.Count]), resetTransform: true);
+            GrabManager.Release().item.Destroy();
         }
 
-        foreach (var queue in Queues)
+        foreach (var q in Queues)
         {
-            queue.FrontGhost.Insert(BallQueue.Item.MakeGhost(), resetTransform: true);
-            queue.BackGhost.Insert(BallQueue.Item.MakeGhost(), resetTransform: true);
+            q.Clear();
+        }
+    }
+    public void Populate(int[][] items)
+    {
+        for (int i = 0; i < items.Length; i++)
+        {
+            for (int j = 0; j < items[i].Length; j++)
+            {
+                var item = new BallQueue.Item(colors[items[i][j]]);
+                Queues[i].Push(item, resetTransform: true);
+            }
         }
     }
 }

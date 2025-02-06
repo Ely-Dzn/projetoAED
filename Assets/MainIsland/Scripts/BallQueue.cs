@@ -21,4 +21,11 @@ public class BallQueue : GameQueue<BallQueue.Item>
             return item;
         }
     }
+    protected override void Awake()
+    {
+        base.Awake();
+
+        FrontGhost.Insert(Item.MakeGhost(), resetTransform: true);
+        BackGhost.Insert(Item.MakeGhost(), resetTransform: true);
+    }
 }
