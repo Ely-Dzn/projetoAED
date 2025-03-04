@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class BookQuests : MonoBehaviour
 {
+    private const string QUEST_ID = "book_stack";
+
     private QuestWrapper quest;
     private BookStackGroup group;
     [SerializeField]
@@ -13,7 +15,7 @@ public class BookQuests : MonoBehaviour
     private int[] task1Order = { 0, 2, 3, 4 };
     [SerializeField]
     private GameObject task1Anim;
-    public SpatialInteractable startButton;
+    public ToggleButton startButton;
     private bool playing = false;
 
     IEnumerator Start()
@@ -24,7 +26,7 @@ public class BookQuests : MonoBehaviour
         //TODO: usar "yield return null;"
         yield return new WaitUntil(() => group.Lists != null && group.Lists.Count > 0 && group.Lists[0].Count > 0);
 
-        startButton.onInteractEvent += HandleButton;
+        startButton.onToggle += HandleButton;
         group.GrabArea.onExitEvent += StopPlaying;
         quest.quest.onCompletedEvent += StopPlaying;
 
@@ -177,28 +179,35 @@ public class BookQuests : MonoBehaviour
 
     void HandleButton()
     {
-        if (playing) StopPlaying();
-        else StartPlaying();
+        if (startButton.State) StartPlaying();
+        else StopPlaying();
+        startButton.State = playing;
     }
     void StartPlaying()
     {
+        if (QuestSync.Instance.GetCurrent() != null)
+        {
+            QuestSync.Instance.StopAny();
+        }
+        QuestSync.Instance.SetCurrent(QUEST_ID, StopPlaying);
         playing = true;
+        startButton.State = true;
         foreach (var t in quest.quest.tasks)
         {
             GameTimer.Instance.labels.Add(t.name);
         }
         GameTimer.Instance.Begin();
         quest.Start();
-        startButton.interactText = "Parar";
     }
     void StopPlaying()
     {
+        QuestSync.Instance.Stop(QUEST_ID);
         group.Clear();
         group.Populate(BookStackGroup.defaultBooks);
         playing = false;
+        startButton.State = false;
         GameTimer.Instance.Stop();
         quest.Reset();
-        startButton.interactText = "Começar";
     }
     void Update()
     {

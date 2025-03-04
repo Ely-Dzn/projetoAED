@@ -6,33 +6,28 @@ using UnityEngine.UI;
 
 public class StackQueueQuest : MonoBehaviour
 {
+    private const string QUEST_ID = "stack_and_queue";
+
     private QuestWrapper quest;
-    //TODO: criar novos grupos? ou um grupo unificado?
-    // lembrar de desativar os grupos antigos
-    public BookStackGroup stacks;
-    public BallQueueGroup queues;
-    public SpatialInteractable startButton;
+    public StackQueueGroup group;
+    public ToggleButton startButton;
     private bool playing = false;
 
     IEnumerator Start()
     {
         quest = new QuestWrapper(GetComponent<SpatialQuest>());
 
-        //TODO: usar "yield return null;"
-        yield return new WaitUntil(() => stacks.Lists != null && stacks.Lists.Count > 0 && stacks.Lists[0].Count > 0);
+        yield return new WaitUntil(() => group.Lists != null && group.Lists.Count > 0 && group.Lists[0].Count > 0);
 
-        startButton.onInteractEvent += HandleButton;
-        stacks.GrabArea.onExitEvent += StopPlaying;
-        queues.GrabArea.onExitEvent += StopPlaying;
+        startButton.onToggle += HandleButton;
+        group.GrabArea.onExitEvent += StopPlaying;
         quest.quest.onCompletedEvent += StopPlaying;
 
         quest.AddTaskHandler(1,
             start: (task) =>
             {
-                stacks.Clear();
-                stacks.Populate(BookStackGroup.defaultBooks);
-                queues.Clear();
-                queues.Populate(BallQueueGroup.defaultItems);
+                group.Clear();
+                group.Populate(StackQueueGroup.defaultItems);
             },
             update: (task) =>
             {
@@ -44,28 +39,35 @@ public class StackQueueQuest : MonoBehaviour
 
     void HandleButton()
     {
-        if (playing) StopPlaying();
-        else StartPlaying();
+        if (startButton.State) StartPlaying();
+        else StopPlaying();
+        startButton.State = playing;
     }
     void StartPlaying()
     {
+        if (QuestSync.Instance.GetCurrent() != null)
+        {
+            QuestSync.Instance.StopAny();
+        }
+        QuestSync.Instance.SetCurrent(QUEST_ID, StopPlaying);
         playing = true;
+        startButton.State = true;
         foreach (var t in quest.quest.tasks)
         {
             GameTimer.Instance.labels.Add(t.name);
         }
         GameTimer.Instance.Begin();
         quest.Start();
-        startButton.interactText = "Parar";
     }
     void StopPlaying()
     {
-        stacks.Clear();
-        stacks.Populate(BookStackGroup.defaultBooks);
+        QuestSync.Instance.Stop(QUEST_ID);
+        group.Clear();
+        group.Populate(StackQueueGroup.defaultItems);
         playing = false;
+        startButton.State = false;
         GameTimer.Instance.Stop();
         quest.Reset();
-        startButton.interactText = "Começar";
     }
     void Update()
     {

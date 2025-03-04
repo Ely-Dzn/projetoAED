@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SpatialSys.UnitySDK;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -22,7 +23,7 @@ public abstract class GameList<T> : MonoBehaviour where T : GameItem
     public event InteractHandler OnInteractFailEvent;
     protected List<GameSlot<T>> ghostSlots = new();
     protected GameSlot<T> warnedSlot = null;
-    public Object grabGroup;
+    public UnityEngine.Object grabGroup;
     public SpatialTriggerEvent grabArea = null;
 
     protected virtual void Awake()
@@ -215,6 +216,22 @@ public abstract class GameList<T> : MonoBehaviour where T : GameItem
         }
         return slotComponent.Get<T>();
         //return Slots.Find(s => s.Item == item);
+    }
+
+    public virtual bool Set(int idx, T item, bool resetTransform = false)
+    {
+        if (idx >= MaxSize) return false;
+        GameSlot<T> slot = Slots[idx];
+        slot.Insert(item, resetTransform: resetTransform);
+        Count = Math.Max(Count, idx + 1);
+        UpdateGhosts();
+        foreach (var s in Slots)
+        {
+            UpdateSlotPosition(s);
+        }
+        item.Transform.GetComponentInChildren<Collider>(true).enabled = true;
+        item.Transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        return true;
     }
 
     protected virtual GameSlot<T> AddGhost(T ghost = null)

@@ -224,7 +224,7 @@ public class TestQueueGroup : MonoBehaviour
         bowlOutline.enabled = false;
         colorDisplay.enabled = false;
         queue.Clear();
-        Grabbed.Destroy();
+        if (Grabbed) Grabbed.Destroy();
         Grabbed = null;
         foreach (var item in bowlItems)
         {
