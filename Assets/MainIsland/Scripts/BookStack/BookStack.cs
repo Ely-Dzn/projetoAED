@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BookStack : GameStack<BookStack.Item>
 {
-    public class Item : GameItem
+    public class Item : GameItem, IColoredItem
     {
         public bool isGhost = false;
         private Color color;

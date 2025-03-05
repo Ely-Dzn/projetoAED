@@ -690,7 +690,42 @@ MonoBehaviour:
   questRewards: []
   tasks:
   - id: 1
-    name: Task 1
+    name: Inverter Pilha
+    type: 0
+    progressSteps: 0
+    taskMarkers: []
+    onStartedEvent:
+      id: 0
+      unityEventIsSynced: 0
+      unityEvent:
+        m_PersistentCalls:
+          m_Calls: []
+      animatorEvent:
+        events: []
+      questEvent:
+        events: []
+    onCompletedEvent:
+      id: 0
+      unityEventIsSynced: 0
+      unityEvent:
+        m_PersistentCalls:
+          m_Calls: []
+      animatorEvent:
+        events: []
+      questEvent:
+        events: []
+    onPreviouslyCompleted:
+      id: 0
+      unityEventIsSynced: 0
+      unityEvent:
+        m_PersistentCalls:
+          m_Calls: []
+      animatorEvent:
+        events: []
+      questEvent:
+        events: []
+  - id: 2
+    name: Combinar Pilhas em Fila
     type: 0
     progressSteps: 0
     taskMarkers: []
@@ -775,7 +810,7 @@ GameObject:
   - component: {fileID: 74960425}
   - component: {fileID: 74960426}
   m_Layer: 0
-  m_Name: Queue
+  m_Name: Queue 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -788,8 +823,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 74960424}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.84, y: 0, z: 0.42}
+  m_LocalRotation: {x: -0, y: 0.14458077, z: -0, w: 0.9894931}
+  m_LocalPosition: {x: 0.92, y: 0, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -797,7 +832,7 @@ Transform:
   - {fileID: 502666663}
   m_Father: {fileID: 2133226329}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 16.626, z: 0}
 --- !u!114 &74960426
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9846,7 +9881,7 @@ GameObject:
   - component: {fileID: 1156209857}
   - component: {fileID: 1156209858}
   m_Layer: 0
-  m_Name: stack2
+  m_Name: Stack 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9859,8 +9894,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1156209856}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.8899999, y: 0, z: 0.49}
+  m_LocalRotation: {x: -0, y: -0.04513228, z: -0, w: 0.9989811}
+  m_LocalPosition: {x: -0.48, y: 0, z: 0.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9868,7 +9903,7 @@ Transform:
   - {fileID: 262541610}
   m_Father: {fileID: 2133226329}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -5.174, z: 0}
 --- !u!114 &1156209858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14712,7 +14747,7 @@ GameObject:
   - component: {fileID: 1592129724}
   - component: {fileID: 1592129725}
   m_Layer: 0
-  m_Name: Queue (2)
+  m_Name: Queue 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14725,8 +14760,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1592129723}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.75, y: 0, z: 0.84}
+  m_LocalRotation: {x: -0, y: 0.29098886, z: -0, w: 0.9567265}
+  m_LocalPosition: {x: 2.15, y: 0, z: 0.55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -14734,7 +14769,7 @@ Transform:
   - {fileID: 471149799}
   m_Father: {fileID: 2133226329}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 33.834, z: 0}
 --- !u!114 &1592129725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18000,7 +18035,7 @@ GameObject:
   - component: {fileID: 1953691720}
   - component: {fileID: 1953691721}
   m_Layer: 0
-  m_Name: stack1
+  m_Name: Stack 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18013,8 +18048,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1953691719}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.5500009, y: 0, z: 0.99000025}
+  m_LocalRotation: {x: -0, y: -0.20453888, z: -0, w: 0.9788585}
+  m_LocalPosition: {x: -1.86, y: 0, z: 0.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -18022,7 +18057,7 @@ Transform:
   - {fileID: 1137246924}
   m_Father: {fileID: 2133226329}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -23.605, z: 0}
 --- !u!114 &1953691721
 MonoBehaviour:
   m_ObjectHideFlags: 0

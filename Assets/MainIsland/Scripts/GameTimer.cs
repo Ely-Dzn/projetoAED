@@ -68,8 +68,10 @@ public class GameTimer : MonoBehaviour
     }
     public void Stop()
     {
+        if (!enabled) return;
         Update(); // Certifica que o último tempo é exibido
         enabled = false;
+        Invoke(nameof(Clear), 5f);
     }
     public void Clear()
     {

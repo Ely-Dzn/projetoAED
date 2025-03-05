@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 [DisallowMultipleComponent]
 public class StackQueueGroup : ListGroup<GameList<StackQueueGroup.Item>, StackQueueGroup.Item>
 {
-    public class Item : GameItem
+    public class Item : GameItem, IColoredItem
     {
         public bool isGhost = false;
         private Color color;
@@ -29,10 +29,10 @@ public class StackQueueGroup : ListGroup<GameList<StackQueueGroup.Item>, StackQu
         }
     }
 
-    public GameStack<Item> stack1;
-    public GameStack<Item> stack2;
-    public GameQueue<Item> queue1;
-    public GameQueue<Item> queue2;
+    public SQStack stack1;
+    public SQStack stack2;
+    public SQQueue queue1;
+    public SQQueue queue2;
     public List<Color> colors;
     public static readonly int[][] defaultItems = {
         new int[]{ 0, 1, 2, 3, 4 },
@@ -44,10 +44,10 @@ public class StackQueueGroup : ListGroup<GameList<StackQueueGroup.Item>, StackQu
     new void Start()
     {
         base.Start();
-        stack1 = Lists[0] as GameStack<Item>;
-        stack2 = Lists[1] as GameStack<Item>;
-        queue1 = Lists[2] as GameQueue<Item>;
-        queue2 = Lists[3] as GameQueue<Item>;
+        stack1 = Lists[0] as SQStack;
+        stack2 = Lists[1] as SQStack;
+        queue1 = Lists[2] as SQQueue;
+        queue2 = Lists[3] as SQQueue;
 
         Populate(defaultItems);
     }
@@ -72,20 +72,8 @@ public class StackQueueGroup : ListGroup<GameList<StackQueueGroup.Item>, StackQu
             {
                 var item = new Item(colors[items[i][j]]);
                 Lists[i].Set(j, item, resetTransform: true);
-                item.Transform.rotation = GetRandomRotation();
             }
         }
     }
-
-    private Quaternion GetRandomRotation()
-    {
-        return Quaternion.Euler(0, (Random.value - 0.5f) * 90f, 0);
-    }
-
-    //protected override Quaternion GetGrabbedRotation()
-    //{
-    //    var player = SpatialBridge.actorService.localActor.avatar;
-    //    return Utils.QuaternionFromEuler(player.rotation.eulerAngles + new Vector3(90, 90, 90));
-    //}
 
 }

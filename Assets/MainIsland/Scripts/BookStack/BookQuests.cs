@@ -23,7 +23,6 @@ public class BookQuests : MonoBehaviour
         quest = new QuestWrapper(GetComponent<SpatialQuest>());
         group = GetComponent<BookStackGroup>();
 
-        //TODO: usar "yield return null;"
         yield return new WaitUntil(() => group.Lists != null && group.Lists.Count > 0 && group.Lists[0].Count > 0);
 
         startButton.onToggle += HandleButton;
@@ -53,27 +52,17 @@ public class BookQuests : MonoBehaviour
             },
             update: (task) =>
             {
+                bool anyOk = false;
                 int bestProgress = 0;
                 foreach (var stack in group.Lists)
                 {
-                    int progress = 0;
-                    for (int i = 0; i < task1Order.Length; i++)
-                    {
-                        var item = stack.Slots[i].Item;
-                        if (item && item.Color == group.colors[task1Order[i]])
-                        {
-                            progress++;
-                        }
-                    }
-                    bestProgress = Mathf.Max(bestProgress, progress);
+                    var (ok, count) = Utils.CompareColorSequence(stack, task1Order, group.colors);
+                    anyOk |= ok;
+                    bestProgress = Mathf.Max(bestProgress, count);
                 }
 
                 //task.progress = bestProgress;
-                if (bestProgress == task1Order.Length)
-                {
-                    task.CompleteTask();
-                    return;
-                }
+                if (anyOk) task.CompleteTask();
             },
             cleanup: (task) =>
             {

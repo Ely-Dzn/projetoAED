@@ -23,17 +23,60 @@ public class StackQueueQuest : MonoBehaviour
         group.GrabArea.onExitEvent += StopPlaying;
         quest.quest.onCompletedEvent += StopPlaying;
 
+        // Inverter a pilha
+        int[][] task1Items = {
+            new int[]{ },
+            new int[]{ 3, 1, 2, 4, 0 },
+            new int[]{ },
+            new int[]{ },
+        };
+        int[] task1Target = task1Items[1].Reverse().ToArray();
         quest.AddTaskHandler(1,
             start: (task) =>
             {
                 group.Clear();
-                group.Populate(StackQueueGroup.defaultItems);
+                group.Populate(task1Items);
+                group.stack1.enabled = false;
+                group.queue2.enabled = false;
             },
             update: (task) =>
             {
+                if (Utils.CompareColorSequence(group.stack2, task1Target, group.colors).ok)
+                {
+                    task.CompleteTask();
+                }
             },
             cleanup: (task) =>
             {
+                group.stack1.enabled = true;
+                group.queue2.enabled = true;
+            });
+
+        // Combinar duas pilhas numa fila
+        int[][] task2Items = {
+            new int[]{ 1, 3, 4 },
+            new int[]{ 2, 4, 0 },
+            new int[]{ },
+            new int[]{ },
+        };
+        int[] task2Target = { 1, 3, 4, 2, 4, 0 };
+        quest.AddTaskHandler(2,
+            start: (task) =>
+            {
+                group.Clear();
+                group.Populate(task2Items);
+                group.queue2.enabled = false;
+            },
+            update: (task) =>
+            {
+                if (Utils.CompareColorSequence(group.queue1, task2Target, group.colors).ok)
+                {
+                    task.CompleteTask();
+                }
+            },
+            cleanup: (task) =>
+            {
+                group.queue2.enabled = true;
             });
     }
 

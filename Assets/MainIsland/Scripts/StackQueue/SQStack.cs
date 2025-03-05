@@ -9,7 +9,6 @@ public class SQStack : GameStack<Item>
     {
         base.Awake();
 
-        // Livro fantasma do topo da pilha
         TopGhost.Insert(Item.MakeGhost(), resetTransform: true);
         TopGhost.transform.rotation = Quaternion.Euler(0, Random.value * 360, 0);
     }
