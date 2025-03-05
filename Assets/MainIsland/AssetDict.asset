@@ -25,3 +25,5 @@ MonoBehaviour:
     value: {fileID: 7196630559819421603, guid: 736d6f901e486234ab005ceff1e3a164, type: 3}
   - name: Prefabs/Ball
     value: {fileID: 4976880502454460573, guid: 7be7f3e916eaada44a6c6c52f2820a52, type: 3}
+  - name: Prefabs/InfoBoardItem
+    value: {fileID: 2306923806356424407, guid: 921649fe7827b454dbbee9dd55d7b8ec, type: 3}

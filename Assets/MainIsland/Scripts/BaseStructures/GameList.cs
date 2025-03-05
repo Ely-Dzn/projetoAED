@@ -42,7 +42,12 @@ public abstract class GameList<T> : MonoBehaviour where T : GameItem
         }
         else
         {
-            Slots = Utils.GetChildren<GameSlot<T>>(slotsContainer.transform);
+            var _slots = Utils.GetChildren(slotsContainer.transform);
+            foreach (var slot in _slots)
+            {
+                var comp = slot.GetOrAddComponent<GameSlot>();
+                Slots.Add(comp.Make<GameSlot<T>, T>(new GameSlot<T>(comp)));
+            }
             if (Slots.Count == 0)
             {
                 throw new System.Exception("Prefab de slot não definido mas não há slots preexistentes");

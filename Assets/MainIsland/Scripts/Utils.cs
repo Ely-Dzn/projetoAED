@@ -34,8 +34,7 @@ public static class Utils
         {
             Transform child = parent.GetChild(i);
             if (!child.gameObject.activeSelf) continue;
-            T comp = child.GetComponent<T>();
-            if (comp == null) continue;
+            if (!child.TryGetComponent<T>(out var comp)) continue;
             children.Add(comp);
         }
         return children;
