@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BallQueue : GameQueue<BallQueue.Item>
 {
-    public class Item : GameItem
+    public class Item : GameItem, IColoredItem
     {
         private Color color;
         public Color Color => color;

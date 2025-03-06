@@ -12,12 +12,19 @@ public class StackQueueQuest : MonoBehaviour
     public StackQueueGroup group;
     public ToggleButton startButton;
     private bool playing = false;
+    private SequenceGuide[] sequenceGuides;
 
     IEnumerator Start()
     {
         quest = new QuestWrapper(GetComponent<SpatialQuest>());
 
         yield return new WaitUntil(() => group.Lists != null && group.Lists.Count > 0 && group.Lists[0].Count > 0);
+
+        sequenceGuides = new SequenceGuide[group.Lists.Count];
+        for (int i = 0; i < group.Lists.Count; i++)
+        {
+            sequenceGuides[i] = group.Lists[i].gameObject.GetComponentInChildren<SequenceGuide>(true);
+        }
 
         startButton.onToggle += HandleButton;
         group.GrabArea.onExitEvent += StopPlaying;
@@ -38,6 +45,7 @@ public class StackQueueQuest : MonoBehaviour
                 group.Populate(task1Items);
                 group.stack1.enabled = false;
                 group.queue2.enabled = false;
+                sequenceGuides[1].Display(task1Target, group.colors);
             },
             update: (task) =>
             {
@@ -48,6 +56,7 @@ public class StackQueueQuest : MonoBehaviour
             },
             cleanup: (task) =>
             {
+                ClearGuides();
                 group.stack1.enabled = true;
                 group.queue2.enabled = true;
             });
@@ -66,6 +75,7 @@ public class StackQueueQuest : MonoBehaviour
                 group.Clear();
                 group.Populate(task2Items);
                 group.queue2.enabled = false;
+                sequenceGuides[2].Display(task2Target, group.colors);
             },
             update: (task) =>
             {
@@ -76,8 +86,17 @@ public class StackQueueQuest : MonoBehaviour
             },
             cleanup: (task) =>
             {
+                ClearGuides();
                 group.queue2.enabled = true;
             });
+    }
+
+    void ClearGuides()
+    {
+        foreach (var guide in sequenceGuides)
+        {
+            guide.Clear();
+        }
     }
 
     void HandleButton()

@@ -11,12 +11,10 @@ public class BookQuests : MonoBehaviour
     private QuestWrapper quest;
     private BookStackGroup group;
     [SerializeField]
-    private GameObject colorsDisplay;
-    private int[] task1Order = { 0, 2, 3, 4 };
-    [SerializeField]
     private GameObject task1Anim;
     public ToggleButton startButton;
     private bool playing = false;
+    private SequenceGuide[] sequenceGuides;
 
     IEnumerator Start()
     {
@@ -25,30 +23,25 @@ public class BookQuests : MonoBehaviour
 
         yield return new WaitUntil(() => group.Lists != null && group.Lists.Count > 0 && group.Lists[0].Count > 0);
 
+        sequenceGuides = new SequenceGuide[group.Lists.Count];
+        for (int i = 0; i < group.Lists.Count; i++)
+        {
+            sequenceGuides[i] = group.Lists[i].gameObject.GetComponentInChildren<SequenceGuide>(true);
+        }
+
         startButton.onToggle += HandleButton;
         group.GrabArea.onExitEvent += StopPlaying;
         quest.quest.onCompletedEvent += StopPlaying;
 
         // Colocar a primeira pilha na mesma ordem, sem o verde
+        int[] task1Order = { 0, 2, 3, 4 };
         quest.AddTaskHandler(1,
             start: (task) =>
             {
                 group.Clear();
                 group.Populate(BookStackGroup.defaultBooks);
                 task1Anim.SetActive(true);
-                for (int i = 0; i < colorsDisplay.transform.childCount; i++)
-                {
-                    var el = colorsDisplay.transform.GetChild(i).GetComponent<RawImage>();
-                    if (i >= task1Order.Length)
-                    {
-                        el.enabled = false;
-                    }
-                    else
-                    {
-                        el.enabled = true;
-                        el.color = group.colors[task1Order[i]];
-                    }
-                }
+                sequenceGuides[0].Display(task1Order, group.colors);
             },
             update: (task) =>
             {
@@ -66,6 +59,7 @@ public class BookQuests : MonoBehaviour
             },
             cleanup: (task) =>
             {
+                ClearGuides();
                 task1Anim.SetActive(false);
             });
 
@@ -79,6 +73,8 @@ public class BookQuests : MonoBehaviour
                     new int[] { 2, 0, 2, 2, 2 },
                     new int[] { 0, 0, 2, 0 },
                 });
+                sequenceGuides[0].Display(new int[] { 2, 2, 2, 2, 2, 2, 2 }, group.colors);
+                sequenceGuides[2].Display(new int[] { 0, 0, 0, 0, 0, 0 }, group.colors);
             },
             update: (task) =>
             {
@@ -111,8 +107,11 @@ public class BookQuests : MonoBehaviour
                 if (!intersect && empty == 1)
                 {
                     task.CompleteTask();
-                    return;
                 }
+            },
+            cleanup: (task) =>
+            {
+                ClearGuides();
             });
 
         // separar três cores
@@ -125,6 +124,9 @@ public class BookQuests : MonoBehaviour
                     new int[] { 2, 2, 1, 1 },
                     new int[] { 2, 1, 0, 0 },
                 });
+                sequenceGuides[0].Display(new int[] { 0, 0, 0, 0 }, group.colors);
+                sequenceGuides[1].Display(new int[] { 1, 1, 1, 1 }, group.colors);
+                sequenceGuides[2].Display(new int[] { 2, 2, 2 }, group.colors);
             },
             update: (task) =>
             {
@@ -161,9 +163,20 @@ public class BookQuests : MonoBehaviour
                 if (!intersect)
                 {
                     task.CompleteTask();
-                    return;
                 }
+            },
+            cleanup: (task) =>
+            {
+                ClearGuides();
             });
+    }
+
+    void ClearGuides()
+    {
+        foreach (var guide in sequenceGuides)
+        {
+            guide.Clear();
+        }
     }
 
     void HandleButton()

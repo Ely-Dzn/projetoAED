@@ -11,12 +11,10 @@ public class BallQueueQuests : MonoBehaviour
     private QuestWrapper quest;
     private BallQueueGroup group;
     [SerializeField]
-    private GameObject colorsDisplay;
-    private int[] task1Order = { 0, 2, 3, 4 };
-    [SerializeField]
     //private GameObject task1Anim;
     public ToggleButton startButton;
     private bool playing = false;
+    private SequenceGuide[] sequenceGuides;
 
     IEnumerator Start()
     {
@@ -25,63 +23,45 @@ public class BallQueueQuests : MonoBehaviour
 
         yield return new WaitUntil(() => group.Lists != null && group.Lists.Count > 0 && group.Lists[0].Count > 0);
 
+        sequenceGuides = new SequenceGuide[group.Lists.Count];
+        for (int i = 0; i < group.Lists.Count; i++)
+        {
+            sequenceGuides[i] = group.Lists[i].gameObject.GetComponentInChildren<SequenceGuide>(true);
+        }
+
         startButton.onToggle += HandleButton;
         group.GrabArea.onExitEvent += StopPlaying;
         quest.quest.onCompletedEvent += StopPlaying;
 
         // Colocar a primeira pilha na mesma ordem, sem o verde
+        int[] task1Order = { 0, 2, 3, 4 };
         quest.AddTaskHandler(1,
             start: (task) =>
             {
                 group.Clear();
-                group.Populate(BallQueueGroup.defaultItems);
-                //task1Anim.SetActive(true);
-                colorsDisplay.SetActive(true);
-                for (int i = 0; i < colorsDisplay.transform.childCount; i++)
-                {
-                    var el = colorsDisplay.transform.GetChild(i).GetComponent<RawImage>();
-                    if (i >= task1Order.Length)
-                    {
-                        el.enabled = false;
-                    }
-                    else
-                    {
-                        el.enabled = true;
-                        el.color = group.colors[task1Order[i]];
-                    }
-                }
+                group.Populate(BookStackGroup.defaultBooks);
+                sequenceGuides[0].Display(task1Order, group.colors);
             },
             update: (task) =>
             {
+                bool anyOk = false;
                 int bestProgress = 0;
                 foreach (var stack in group.Lists)
                 {
-                    int progress = 0;
-                    for (int i = 0; i < task1Order.Length; i++)
-                    {
-                        var item = stack.Slots[i].Item;
-                        if (item && item.Color == group.colors[task1Order[i]])
-                        {
-                            progress++;
-                        }
-                    }
-                    bestProgress = Mathf.Max(bestProgress, progress);
+                    var (ok, count) = Utils.CompareColorSequence(stack, task1Order, group.colors);
+                    anyOk |= ok;
+                    bestProgress = Mathf.Max(bestProgress, count);
                 }
 
                 //task.progress = bestProgress;
-                if (bestProgress == task1Order.Length)
-                {
-                    task.CompleteTask();
-                    return;
-                }
+                if (anyOk) task.CompleteTask();
             },
             cleanup: (task) =>
             {
-                //task1Anim.SetActive(false);
-                colorsDisplay.SetActive(false);
+                ClearGuides();
             });
 
-        // separar os azuis e vermelhos em duas pilhas
+        // separar os livros azuis e vermelhos em duas pilhas
         quest.AddTaskHandler(2,
             start: (task) =>
             {
@@ -91,6 +71,8 @@ public class BallQueueQuests : MonoBehaviour
                     new int[] { 2, 0, 2, 2, 2 },
                     new int[] { 0, 0, 2, 0 },
                 });
+                sequenceGuides[0].Display(new int[] { 2, 2, 2, 2, 2, 2, 2 }, group.colors);
+                sequenceGuides[2].Display(new int[] { 0, 0, 0, 0, 0, 0 }, group.colors);
             },
             update: (task) =>
             {
@@ -123,8 +105,11 @@ public class BallQueueQuests : MonoBehaviour
                 if (!intersect && empty == 1)
                 {
                     task.CompleteTask();
-                    return;
                 }
+            },
+            cleanup: (task) =>
+            {
+                ClearGuides();
             });
 
         // separar três cores
@@ -137,6 +122,9 @@ public class BallQueueQuests : MonoBehaviour
                     new int[] { 2, 2, 1, 1 },
                     new int[] { 2, 1, 0, 0 },
                 });
+                sequenceGuides[0].Display(new int[] { 0, 0, 0, 0 }, group.colors);
+                sequenceGuides[1].Display(new int[] { 1, 1, 1, 1 }, group.colors);
+                sequenceGuides[2].Display(new int[] { 2, 2, 2 }, group.colors);
             },
             update: (task) =>
             {
@@ -173,9 +161,20 @@ public class BallQueueQuests : MonoBehaviour
                 if (!intersect)
                 {
                     task.CompleteTask();
-                    return;
                 }
+            },
+            cleanup: (task) =>
+            {
+                ClearGuides();
             });
+    }
+
+    void ClearGuides()
+    {
+        foreach (var guide in sequenceGuides)
+        {
+            guide.Clear();
+        }
     }
 
     void HandleButton()
