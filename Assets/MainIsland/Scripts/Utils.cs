@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SpatialSys.UnitySDK;
 using UnityEngine;
@@ -118,5 +119,10 @@ public static class Utils
             allOk &= ok;
         }
         return (allOk, total);
+    }
+
+    public static bool CanUseRaycast()
+    {
+        return SpatialSys.UnitySDK.SpatialBridge.actorService.localActor.platform == SpatialSys.UnitySDK.SpatialPlatform.Web;
     }
 }

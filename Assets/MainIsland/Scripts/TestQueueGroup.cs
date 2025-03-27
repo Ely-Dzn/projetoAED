@@ -106,6 +106,7 @@ public class TestQueueGroup : MonoBehaviour
         bowlInteractable = bowl.GetComponentInChildren<SpatialInteractable>();
         bowlInteractable.onInteractEvent += OnBowlInteract;
         bowlInteractable.enabled = false;
+
         bowlOutline = bowl.GetComponentInChildren<Outline>();
         bowlOutline.enabled = false;
 
@@ -157,7 +158,9 @@ public class TestQueueGroup : MonoBehaviour
             mainBallLine.SetPosition(1, Raycast.Hit.point);
         }
 
-        if (Grabbed && Raycast.HasHit && Raycast.Hit.collider.gameObject == bowl)
+        if (Grabbed &&
+            (!Utils.CanUseRaycast()
+            || (Raycast.HasHit && Raycast.Hit.collider.gameObject == bowl)))
         {
             bowlOutline.enabled = true;
             bowlInteractable.enabled = true;

@@ -62,8 +62,11 @@ public abstract class GameList<T> : MonoBehaviour where T : GameItem
         for (int i = 0; i < Slots.Count; i++)
         {
             var slot = Slots[i];
-            if (slot.interactable != null)
-                slot.interactable.enabled = false;
+            if (Utils.CanUseRaycast())
+            {
+                if (slot.interactable != null)
+                    slot.interactable.enabled = false;
+            }
             if (slot.outline != null)
                 slot.outline.enabled = false;
             slot.index = i;
@@ -104,8 +107,11 @@ public abstract class GameList<T> : MonoBehaviour where T : GameItem
     {
         if (slot == null) return;
         var isTarget = slot == targetSlot;
-        if (slot.interactable != null)
-            slot.interactable.enabled = isTarget;
+        if (Utils.CanUseRaycast())
+        {
+            if (slot.interactable != null)
+                slot.interactable.enabled = isTarget;
+        }
         if (slot.outline != null)
             slot.outline.enabled = isTarget;
         UpdateInteractText(slot);
