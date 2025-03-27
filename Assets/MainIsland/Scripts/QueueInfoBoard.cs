@@ -75,17 +75,27 @@ public class QueueInfoBoard : GameQueue<QueueInfoBoard.Item>
     public SpatialInteractable popButton;
     public GameObject frontIndicator;
     public GameObject backIndicator;
+    public bool animate = true;
+    [SerializeField]
+    private float animationWait = 0;
 
     void Start()
     {
-        StartCoroutine(AnimationLoop());
+        if (animate) StartCoroutine(AnimationLoop());
+
         frontIndicator.transform.position = Slots[0].transform.position;
         backIndicator.transform.position = Slots[0].transform.position;
+
+        if (pushButton) pushButton.onInteractEvent += () => HandlePush();
+        if (popButton) popButton.onInteractEvent += () => HandlePop();
     }
 
     new void Update()
     {
         base.Update();
+
+        if (animationWait > 0) animationWait -= Time.deltaTime;
+
         frontIndicator.SetActive(Count > 1);
 
         frontIndicator.transform.position = Vector3.Lerp(
@@ -102,7 +112,12 @@ public class QueueInfoBoard : GameQueue<QueueInfoBoard.Item>
     {
         while (true)
         {
-            yield return new WaitForSeconds(2f);
+            if (animationWait > 0)
+            {
+                yield return null;
+                continue;
+            }
+
             bool push = Random.value > 0.5f;
             if (IsEmpty())
             {
@@ -115,22 +130,24 @@ public class QueueInfoBoard : GameQueue<QueueInfoBoard.Item>
 
             if (push)
             {
-                HandlePush();
+                BoardPush();
             }
             else
             {
-                HandlePop();
+                BoardPop();
             }
+
+            yield return new WaitForSeconds(2f);
         }
     }
 
-    void HandlePush()
+    void BoardPush()
     {
         var item = new Item(GetNextColor());
         Push(item, resetTransform: true);
         StartCoroutine(item.AnimateEntry());
     }
-    void HandlePop()
+    void BoardPop()
     {
         var item = Front;
         Pop();
@@ -139,6 +156,16 @@ public class QueueInfoBoard : GameQueue<QueueInfoBoard.Item>
             item.Transform.SetParent(transform, true);
             StartCoroutine(item.AnimateDestroy());
         }
+    }
+    void HandlePush()
+    {
+        animationWait = 3f;
+        BoardPush();
+    }
+    void HandlePop()
+    {
+        animationWait = 3f;
+        BoardPop();
     }
 
     Color GetRandomColor()
